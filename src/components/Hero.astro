@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import { site, url } from '../data/site';
+
+const [first, ...rest] = site.name.split(' ');
+---
+<section class="mx-auto grid max-w-5xl items-center gap-12 px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24 md:grid-cols-[1.5fr_1fr] md:gap-14">
+  <div class="min-w-0">
+    <h1 class="hero-name animate-rise font-display font-medium text-heading dark:text-night-heading">
+      <span class="block">{first}</span> <span class="block">{rest.join(' ')}</span>
+    </h1>
+    <p class="mt-5 animate-rise text-lg font-medium text-heading sm:text-xl dark:text-night-heading" style="animation-delay: 90ms">{site.role}</p>
+    <p class="mt-4 max-w-md animate-rise text-[0.9375rem] leading-relaxed text-muted sm:text-base dark:text-night-muted" style="animation-delay: 180ms">
+      For the last four years I've been building storefront themes, landing pages and checkouts for an e-commerce platform. Before that I spent nearly ten years in operations and customer support, so I tend to think about the person using the page first and the code second.
+    </p>
+    <div class="mt-9 flex animate-rise flex-wrap items-center gap-x-6 gap-y-4" style="animation-delay: 270ms">
+      <a href={url('#work')} class="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 ease-out hover:bg-accent-deep dark:bg-accent-bright dark:text-ink dark:hover:bg-accent-soft">See my work</a>
+      <a href={url(site.cv)} download class="link text-sm font-medium text-heading dark:text-night-heading">Download CV (PDF)</a>
+    </div>
+  </div>
+  <figure class="animate-settle w-full max-w-[17rem] sm:max-w-xs md:mx-auto md:max-w-none" style="animation-delay: 360ms">
+    <Image
+      src={site.hero.image}
+      alt={site.hero.alt}
+      widths={[400, 640, 900]}
+      sizes="(min-width: 768px) 380px, 320px"
+      loading="eager"
+      class="aspect-[4/5] w-full rounded-2xl border border-hairline object-cover dark:border-night-hairline"
+    />
+  </figure>
+</section>
