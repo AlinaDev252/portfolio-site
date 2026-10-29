@@ -2,7 +2,7 @@ import heroImage from '../assets/hero.png';
 
 export const site = {
   name: 'Alina Goiea',
-  role: 'Front-end developer for e-commerce',
+  role: 'Front-End Developer | JavaScript & eCommerce Platforms',
   description:
     'Front-end developer building storefront themes, landing pages and checkout flows for e-commerce. Open to remote Shopify and front-end roles.',
   email: 'costachealina25@gmail.com',
