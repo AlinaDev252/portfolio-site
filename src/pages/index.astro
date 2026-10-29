@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { site, url } from '../data/site';
+
+const work = (await getCollection('work', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+
+const jobs = [
+  {
+    title: 'Front-end developer',
+    company: 'Marbill Technologies',
+    dates: '2022 – now',
+    place: 'Marbella',
+    points: [
+      'Built and maintain 10+ storefront themes for a subscription e-commerce platform.',
+      'Shipped 60+ landing pages and promo campaigns with the design and marketing teams.',
+      'Reworked product, cart and checkout pages so they are quicker to buy from on a phone.',
+      'Coded responsive HTML emails and small JavaScript tools for the content team.',
+    ],
+  },
+  {
+    title: 'Self-taught front-end',
+    company: 'Freelance and personal projects',
+    dates: '2020 – 2022',
+    place: 'Bucharest',
+    points: [
+      'Two years going from my first HTML page to full Vue 3 apps with Pinia, Tailwind CSS and Firebase.',
+      'Udacity Front End Web Developer Nanodegree and the Zero To Mastery Vue.js track.',
+    ],
+  },
+  {
+    title: 'Operations manager',
+    company: 'Azelis Romania',
+    dates: '2011 – 2019',
+    place: 'Bucharest',
+    points: [
+      'Led the customer service team and was the go-to person for our ERP, from testing upgrades to training colleagues.',
+    ],
+  },
+];
+
+const skills = [
+  { label: 'Front-end', value: 'HTML, CSS, Tailwind CSS, Bootstrap 5, JavaScript (ES6+), Vue 3, Twig (Liquid-style templating), HTML email' },
+  { label: 'E-commerce', value: 'Storefront themes, reusable sections, product, cart and checkout pages, landing pages, multi-language stores' },
+  { label: 'Quality', value: 'Accessibility, Core Web Vitals, semantic HTML, technical SEO, cross-browser testing' },
+  { label: 'Tools', value: 'Git and GitHub, Figma, Jira, ClickUp, Webpack, Jest' },
+  { label: 'Languages', value: 'Romanian (native), Spanish (C2), English (C1)' },
+];
+
+const contacts = [
+  { label: 'LinkedIn', href: site.linkedin },
+  { label: 'GitHub', href: site.github },
+];
+---
+<Base>
+  <Hero />
+
+  <Section id="work" title="Selected work" band>
+    <p data-reveal class="max-w-xl text-band-muted">Most of my client work is under NDA, so the brands stay unnamed and the projects go by what they are.</p>
+    <div class="mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2">
+      {work.map((entry, i) => <WorkCard entry={entry} eager={i < 2} index={i} />)}
+    </div>
+  </Section>
+
+  <Section id="about" title="About">
+    <div class="max-w-2xl space-y-5 text-lg leading-relaxed">
+      <p data-reveal>I didn't start in tech. I ran a customer service team in Bucharest and was the person everyone called when the ERP misbehaved. In 2020 I taught myself front-end, and in 2022 I joined Marbill, where I'm now a senior developer in a team of four.</p>
+      <p data-reveal style="--i: 1">What I like most about e-commerce is how quickly you see the result. A faster checkout or a clearer campaign page shows up in the numbers almost right away. That's why I enjoy working closely with marketing: I'm usually the one who turns their ideas into pages we can ship.</p>
+      <p data-reveal style="--i: 2">Next, I want to do the same work on Shopify, for a remote team.</p>
+    </div>
+  </Section>
+
+  <Section id="experience" title="Experience">
+    <ol class="space-y-12">
+      {jobs.map((job) => (
+        <li data-reveal>
+          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+            <h3 class="font-semibold text-heading dark:text-night-heading">{job.title}<span class="font-normal text-muted dark:text-night-muted">, {job.company}</span></h3>
+            <p class="text-sm text-muted dark:text-night-muted">{job.dates} · {job.place}</p>
+          </div>
+          <ul class="mt-3 max-w-2xl list-disc space-y-1.5 pl-5 leading-relaxed marker:text-line dark:marker:text-night-line">
+            {job.points.map((point) => <li>{point}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <Section id="skills" title="Skills">
+    <dl class="divide-y divide-hairline dark:divide-night-hairline">
+      {skills.map((skill, i) => (
+        <div data-reveal style={`--i: ${i}`} class="grid gap-1 py-4 first:pt-0 sm:grid-cols-[9rem_1fr] sm:gap-6">
+          <dt class="font-semibold text-heading dark:text-night-heading">{skill.label}</dt>
+          <dd class="leading-relaxed">{skill.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </Section>
+
+  <Section id="contact" title="Contact">
+    <p data-reveal class="max-w-xl text-lg leading-relaxed">I'm looking for remote front-end and Shopify roles. Email is the quickest way to reach me.</p>
+    <p data-reveal style="--i: 1" class="mt-6">
+      <a href={`mailto:${site.email}`} class="link font-display text-2xl break-all text-heading sm:text-3xl dark:text-night-heading">{site.email}</a>
+    </p>
+    <ul data-reveal style="--i: 2" class="mt-8 flex flex-wrap gap-x-8 gap-y-3 font-medium text-heading dark:text-night-heading">
+      {contacts.map((c) => (
+        <li><a href={c.href} rel="noopener" class="link">{c.label}</a></li>
+      ))}
+      <li><a href={url(site.cv)} download class="link">Download CV (PDF)</a></li>
+    </ul>
+  </Section>
+</Base>

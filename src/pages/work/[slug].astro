@@ -1,0 +1,85 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Gallery from '../../components/Gallery.vue';
+import { url } from '../../data/site';
+
+export async function getStaticPaths() {
+  const work = (await getCollection('work', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+  return work.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: work[(i + 1) % work.length] },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'work'>;
+  next: CollectionEntry<'work'>;
+}
+
+const { entry, next } = Astro.props;
+const { title, summary, kind, role, stack, year, gallery, placeholder } = entry.data;
+const { Content } = await render(entry);
+
+const shot = async (src: ImageMetadata, widths: number[]) => {
+  const img = await getImage({ src, widths, format: 'webp' });
+  return { src: img.src, srcset: img.srcSet.attribute, width: src.width, height: src.height };
+};
+
+const slides = await Promise.all(
+  gallery.map(async (item) => ({
+    desktop: await shot(item.desktop, [640, 1000, 1600]),
+    mobile: item.mobile ? await shot(item.mobile, [320, 520, 780]) : undefined,
+    alt: item.alt,
+    caption: item.caption,
+  })),
+);
+
+const ogImage = await getImage({ src: entry.data.cover, width: 1200, height: 630, fit: 'cover', format: 'png' });
+---
+<Base title={title} description={summary} image={ogImage.src.replace(import.meta.env.BASE_URL, '')} type="article">
+  <article>
+    <header class="mx-auto max-w-5xl px-4 pt-10 sm:px-6 sm:pt-14">
+      <a href={url('#work')} class="link text-sm font-medium text-muted dark:text-night-muted">Back to all work</a>
+      <p class="mt-10 text-sm text-muted dark:text-night-muted">{kind} · {year}</p>
+      <h1 class="mt-2 max-w-3xl font-display text-4xl font-medium tracking-tight text-heading dark:text-night-heading sm:text-5xl">{title}</h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed">{summary}</p>
+      {placeholder && (
+        <p class="mt-6 inline-block rounded-md border border-dashed border-line px-3 py-1.5 text-sm text-muted dark:border-night-line dark:text-night-muted">Placeholder project: screenshots and copy are still to come.</p>
+      )}
+      <dl class="mt-10 grid gap-6 border-y border-hairline py-6 text-sm sm:grid-cols-3 dark:border-night-hairline">
+        <div>
+          <dt class="text-muted dark:text-night-muted">Role</dt>
+          <dd class="mt-1 font-medium text-heading dark:text-night-heading">{role}</dd>
+        </div>
+        <div class="sm:col-span-2">
+          <dt class="text-muted dark:text-night-muted">Stack</dt>
+          <dd class="mt-1 font-medium text-heading dark:text-night-heading">{stack.join(', ')}</dd>
+        </div>
+      </dl>
+    </header>
+
+    {slides.length > 0 && (
+      <section aria-label="Screenshots" data-reveal class="mx-auto max-w-5xl px-4 pt-12 sm:px-6">
+        <Gallery client:visible slides={slides} label={title} />
+      </section>
+    )}
+
+    <div class="mx-auto max-w-5xl px-4 pt-14 pb-20 sm:px-6 sm:pb-24">
+      <div data-reveal class="prose-case max-w-2xl">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  {next.id !== entry.id && (
+    <nav aria-label="Next project" class="border-t border-hairline dark:border-night-hairline">
+      <div data-reveal class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+        <p class="text-sm text-muted dark:text-night-muted">Next project</p>
+        <a href={url(`work/${next.id}/`)} class="link mt-2 inline-block font-display text-2xl font-medium text-heading dark:text-night-heading">{next.data.title}</a>
+      </div>
+    </nav>
+  )}
+</Base>
