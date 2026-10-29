@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.vue';
+import SocialLinks from './SocialLinks.astro';
 import { site, url } from '../data/site';
 
 const onWork = Astro.url.pathname.includes('/work/');
@@ -26,6 +27,9 @@ const links = [
           ))}
         </ul>
       </nav>
+      <span aria-hidden="true" class="hidden h-5 w-px bg-hairline md:block dark:bg-night-hairline"></span>
+      <SocialLinks class="hidden md:flex" />
+      <SocialLinks include={['email']} class="md:hidden" />
       <ThemeToggle client:load />
     </div>
   </div>

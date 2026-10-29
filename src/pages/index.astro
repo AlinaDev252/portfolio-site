@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
 import WorkCard from '../components/WorkCard.astro';
-import { site, url } from '../data/site';
+import { site } from '../data/site';
 
 const work = (await getCollection('work', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
 
@@ -118,7 +118,6 @@ const contacts = [
       {contacts.map((c) => (
         <li><a href={c.href} rel="noopener" class="link">{c.label}</a></li>
       ))}
-      <li><a href={url(site.cv)} download class="link">Download CV (PDF)</a></li>
     </ul>
   </Section>
 </Base>
