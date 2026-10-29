@@ -30,4 +30,17 @@ const work = defineCollection({
     }),
 });
 
-export const collections = { work };
+const projects = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/projects' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    stack: z.array(z.string()),
+    status: z.enum(['live', 'in-progress']),
+    liveUrl: z.url().optional(),
+    repoUrl: z.url().optional(),
+    order: z.number(),
+  }),
+});
+
+export const collections = { work, projects };

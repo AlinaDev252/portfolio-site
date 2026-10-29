@@ -4,9 +4,11 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
 import WorkCard from '../components/WorkCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { site } from '../data/site';
 
 const work = (await getCollection('work', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 
 const jobs = [
   {
@@ -67,6 +69,14 @@ const contacts = [
     <div class="mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2">
       {work.map((entry, i) => <WorkCard entry={entry} eager={i < 2} index={i} />)}
     </div>
+  </Section>
+
+  <Section id="projects" title="Personal projects">
+    <p data-reveal class="max-w-xl text-muted dark:text-night-muted">What I build on my own time, mostly to get better at Shopify.</p>
+    <div class="mt-8 grid gap-5 lg:grid-cols-3">
+      {projects.map((entry, i) => <ProjectCard entry={entry} index={i} />)}
+    </div>
+    <p data-reveal class="mt-8"><a href={site.github} rel="noopener" class="link text-sm font-medium text-heading dark:text-night-heading">More on GitHub</a></p>
   </Section>
 
   <Section id="about" title="About">

@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+  index?: number;
+}
+const { entry, index = 0 } = Astro.props;
+const { title, summary, stack, status, liveUrl, repoUrl } = entry.data;
+const links = [
+  { label: 'Live site', href: liveUrl },
+  { label: 'Code', href: repoUrl },
+].filter((l) => l.href);
+---
+<article data-reveal style={`--i: ${index}`} class="flex flex-col rounded-xl border border-hairline p-5 dark:border-night-hairline">
+  <h3 class="font-semibold text-heading dark:text-night-heading">{title}</h3>
+  <p class="mt-2 leading-relaxed">{summary}</p>
+  <p class="mt-3 text-sm text-muted dark:text-night-muted">{stack.join(' · ')}</p>
+  <div class="mt-auto pt-5">
+    {status === 'in-progress' || links.length === 0 ? (
+      <span class="inline-block rounded-full border border-hairline px-2.5 py-0.5 text-xs text-muted dark:border-night-hairline dark:text-night-muted">In progress</span>
+    ) : (
+      <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-heading dark:text-night-heading">
+        {links.map((l) => (
+          <li><a href={l.href} rel="noopener" class="link">{l.label}<span class="sr-only"> for {title}</span></a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+</article>
