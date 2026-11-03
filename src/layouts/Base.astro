@@ -1,8 +1,11 @@
 ---
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/instrument-sans';
+import newsreaderLatin from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
+import instrumentLatin from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import ContactRail from '../components/ContactRail.astro';
 import { ClientRouter } from 'astro:transitions';
 import { site, url } from '../data/site';
 
@@ -37,9 +40,8 @@ const ogImage = new URL(url(image), Astro.site);
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="preload" href={instrumentLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
     <script is:inline>
       const applyTheme = () => {
         const root = document.documentElement;
@@ -57,7 +59,6 @@ const ogImage = new URL(url(image), Astro.site);
   <body class="flex min-h-dvh flex-col overflow-x-clip bg-paper font-sans text-body antialiased dark:bg-ink dark:text-night-text">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-white dark:focus:bg-accent-bright dark:focus:text-ink">Skip to content</a>
     <Header />
-    <ContactRail />
     <main id="main" class="flex-1">
       <slot />
     </main>

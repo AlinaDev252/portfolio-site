@@ -1,0 +1,35 @@
+---
+import Zoomable from './Zoomable.astro';
+import EmailDiagram from './EmailDiagram.astro';
+import type { Principle } from '../data/principles';
+
+interface Props {
+  principle: Principle;
+  index: number;
+}
+const { principle, index } = Astro.props;
+const { title, body, result, visual, image, imageAlt } = principle;
+const number = String(index + 1).padStart(2, '0');
+---
+<article class="py-14 first:pt-0 last:pb-0">
+  <div data-reveal class="max-w-2xl">
+    <p aria-hidden="true" class="font-display text-sm text-band-muted tabular-nums">{number}</p>
+    <h3 class="mt-2 font-display text-xl font-medium text-balance text-band-heading sm:text-2xl">{title}</h3>
+    <p class="mt-4 leading-relaxed text-pretty">{body}</p>
+    <div class="mt-6 border-t border-band-hairline pt-4 dark:border-band-night-hairline">
+      <p class="text-xs font-semibold tracking-wide text-band-muted uppercase">Result</p>
+      <p class="mt-1.5 text-[0.9375rem] leading-relaxed font-medium text-pretty text-band-heading">{result}</p>
+    </div>
+  </div>
+  <div data-reveal style="--i: 1" class="mt-8">
+    {image ? (
+      <Zoomable id={`zoom-${number}`} image={image} alt={imageAlt ?? ''} label={imageAlt ?? title} dark />
+    ) : visual === 'diagram' ? (
+      <EmailDiagram />
+    ) : (
+      <div aria-hidden="true" class="grid aspect-[16/10] w-full place-items-center rounded-xl border border-dashed border-band-hairline bg-white/[0.04] dark:border-band-night-hairline dark:bg-white/[0.03]">
+        <span class="text-sm text-band-muted">Screenshot coming</span>
+      </div>
+    )}
+  </div>
+</article>

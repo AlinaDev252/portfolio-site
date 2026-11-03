@@ -1,0 +1,50 @@
+---
+const copies = [65, 170, 275];
+const layouts = [45, 128, 211, 294];
+---
+<div class="grid gap-4 lg:grid-cols-2">
+  <figure class="rounded-xl border border-band-hairline p-5 dark:border-band-night-hairline">
+    <figcaption class="text-xs font-semibold tracking-wide text-band-muted uppercase">Before · copies of copies</figcaption>
+    <svg viewBox="0 0 340 270" class="mt-4 w-full" role="img" aria-label="Before: three layouts copied from layout 1 still load their images from layout 1, so editing or deleting it breaks the copies.">
+      <defs>
+        <marker id="arrow-warn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 10 5 0 10z" fill="#f2a7a0" />
+        </marker>
+      </defs>
+      <rect x="20" y="20" width="130" height="48" rx="8" class="fill-white/10 stroke-band-muted" stroke-width="1.5" />
+      <text x="85" y="41" text-anchor="middle" class="fill-band-heading" font-size="15" font-weight="600">Layout 1</text>
+      <text x="85" y="58" text-anchor="middle" class="fill-band-muted" font-size="12.5">its own images</text>
+      <text x="164" y="40" class="fill-band-muted" font-size="12.5">copied paths</text>
+      <text x="164" y="57" class="fill-band-muted" font-size="12.5">point back here</text>
+      {copies.map((x) => (
+        <>
+          <path d={`M${x} 168 C ${x} 120, 85 118, 85 74`} fill="none" stroke="#f2a7a0" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-warn)" />
+          <rect x={x - 45} y="170" width="90" height="40" rx="8" class="fill-white/5 stroke-band-hairline" stroke-width="1.5" />
+          <text x={x} y="195" text-anchor="middle" class="fill-band-text" font-size="14">Copy</text>
+        </>
+      ))}
+      <text x="20" y="240" fill="#f2a7a0" font-size="13.5">Edit layout 1 and</text><text x="20" y="258" fill="#f2a7a0" font-size="13.5">the copies break.</text>
+    </svg>
+  </figure>
+  <figure class="rounded-xl border border-band-hairline p-5 dark:border-band-night-hairline">
+    <figcaption class="text-xs font-semibold tracking-wide text-band-muted uppercase">After · one shared snippet</figcaption>
+    <svg viewBox="0 0 340 270" class="mt-4 w-full" role="img" aria-label="After: one shared image snippet feeds every layout, so a change in one place reaches all of them.">
+      <defs>
+        <marker id="arrow-ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 10 5 0 10z" class="fill-accent-soft" />
+        </marker>
+      </defs>
+      <rect x="70" y="20" width="200" height="48" rx="8" class="fill-accent-soft/15 stroke-accent-soft" stroke-width="1.5" />
+      <text x="170" y="41" text-anchor="middle" class="fill-band-heading" font-size="15" font-weight="600">Shared image snippet</text>
+      <text x="170" y="58" text-anchor="middle" class="fill-band-muted" font-size="12.5">one source of truth</text>
+      {layouts.map((x) => (
+        <>
+          <path d={`M170 68 C 170 120, ${x} 118, ${x} 164`} fill="none" class="stroke-accent-soft" stroke-width="1.5" marker-end="url(#arrow-ok)" />
+          <rect x={x - 36} y="170" width="72" height="40" rx="8" class="fill-white/5 stroke-band-hairline" stroke-width="1.5" />
+          <text x={x} y="195" text-anchor="middle" class="fill-band-text" font-size="14">Layout</text>
+        </>
+      ))}
+      <text x="10" y="240" class="fill-accent-soft" font-size="13.5">Change it once and</text><text x="10" y="258" class="fill-accent-soft" font-size="13.5">every layout follows.</text>
+    </svg>
+  </figure>
+</div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 interface Shot {
   src: string;
@@ -13,6 +13,9 @@ interface Slide {
   mobile?: Shot;
   alt: string;
   caption?: string;
+  full?: string;
+  phone?: Shot;
+  phoneFull?: string;
 }
 
 const props = defineProps<{ slides: Slide[]; label: string }>();
@@ -20,8 +23,25 @@ const props = defineProps<{ slides: Slide[]; label: string }>();
 const view = ref<'desktop' | 'mobile'>('desktop');
 const active = ref(0);
 const track = ref<HTMLElement | null>(null);
+const zoom = ref<HTMLDialogElement | null>(null);
+const zoomTrack = ref<HTMLElement | null>(null);
+const zoomOpen = ref(false);
+const zoomActive = ref(0);
+let zoomFrame = 0;
 const hasMobile = computed(() => props.slides.some((s) => s.mobile));
 const total = computed(() => props.slides.length);
+const named = computed(() => total.value > 1 && props.slides.every((s) => s.caption));
+const tabs = ref<HTMLElement | null>(null);
+const zoomTabs = ref<HTMLElement | null>(null);
+
+const revealTab = (row: HTMLElement | null, index: number) => {
+  const tab = row?.children[index] as HTMLElement | undefined;
+  if (!row || !tab) return;
+  row.scrollTo({ left: tab.offsetLeft - (row.clientWidth - tab.clientWidth) / 2, behavior: reduceMotion() ? 'auto' : 'smooth' });
+};
+
+watch(active, (i) => revealTab(tabs.value, i));
+watch(zoomActive, (i) => revealTab(zoomTabs.value, i));
 let frame = 0;
 
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -70,18 +90,86 @@ const onKey = (event: KeyboardEvent) => {
   }
 };
 
+const zoomItems = () => Array.from(zoomTrack.value?.children ?? []) as HTMLElement[];
+
+const zoomTo = (index: number, smooth = true) => {
+  const el = zoomTrack.value;
+  const item = zoomItems()[index];
+  if (!el || !item) return;
+  el.scrollTo({ left: item.offsetLeft, behavior: smooth && !reduceMotion() ? 'smooth' : 'auto' });
+  zoomActive.value = index;
+};
+
+const zoomStep = (dir: number) => zoomTo(Math.min(total.value - 1, Math.max(0, zoomActive.value + dir)));
+
+const onZoomScroll = () => {
+  cancelAnimationFrame(zoomFrame);
+  zoomFrame = requestAnimationFrame(() => {
+    const el = zoomTrack.value;
+    if (el) zoomActive.value = Math.round(el.scrollLeft / el.clientWidth);
+  });
+};
+
+const openZoom = async (index: number) => {
+  zoomOpen.value = true;
+  zoom.value?.showModal();
+  await nextTick();
+  zoomTo(index, false);
+};
+
+const closeZoom = () => zoom.value?.close();
+
+const onZoomClose = () => {
+  zoomOpen.value = false;
+  goTo(zoomActive.value);
+};
+
+const onZoomKey = (event: KeyboardEvent) => {
+  if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    zoomStep(1);
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    zoomStep(-1);
+  }
+};
+
+const onZoomBackdrop = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (target === zoom.value || target.dataset.zoomSlide !== undefined) closeZoom();
+};
+
 const shotFor = (slide: Slide) => (view.value === 'mobile' && slide.mobile ? slide.mobile : slide.desktop);
 
 onMounted(() => track.value?.addEventListener('scroll', onScroll, { passive: true }));
 onBeforeUnmount(() => {
   track.value?.removeEventListener('scroll', onScroll);
   cancelAnimationFrame(frame);
+  cancelAnimationFrame(zoomFrame);
 });
 </script>
 
 <template>
   <div>
-    <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <div class="mb-5 items-center justify-between gap-3" :class="named ? 'hidden sm:flex' : 'flex flex-wrap'">
+      <div
+        v-if="named"
+        ref="tabs"
+        class="flex min-w-0 flex-1 gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        :aria-label="`${label} pages`"
+      >
+        <button
+          v-for="(slide, i) in slides"
+          :key="i"
+          type="button"
+          class="shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
+          :class="active === i ? 'border-accent bg-accent text-white dark:border-accent-bright dark:bg-accent-bright dark:text-ink' : 'border-hairline text-muted hover:border-line hover:text-heading dark:border-night-hairline dark:text-night-muted dark:hover:border-night-line dark:hover:text-night-heading'"
+          :aria-current="active === i ? 'true' : undefined"
+          @click="goTo(i)"
+        >
+          {{ slide.caption }}
+        </button>
+      </div>
       <div
         v-if="hasMobile"
         class="inline-flex rounded-full border border-hairline p-1 text-sm font-medium dark:border-night-hairline"
@@ -99,7 +187,7 @@ onBeforeUnmount(() => {
           {{ option }}
         </button>
       </div>
-      <div class="hidden items-center gap-2 md:flex">
+      <div class="hidden shrink-0 items-center gap-2 md:flex">
         <button
           type="button"
           class="inline-flex size-10 items-center justify-center rounded-full border border-hairline text-heading transition-colors hover:border-line disabled:opacity-40 dark:border-night-hairline dark:text-night-heading dark:hover:border-night-line"
@@ -138,8 +226,25 @@ onBeforeUnmount(() => {
         <figure>
           <div
             class="flex items-center justify-center overflow-hidden rounded-xl border border-hairline bg-tint dark:border-night-hairline dark:bg-night-surface"
-            :class="view === 'mobile' && slide.mobile ? 'aspect-[4/5] p-5 sm:aspect-[16/10] sm:p-8' : 'aspect-[16/10]'"
+            :class="view === 'mobile' && slide.mobile ? 'aspect-[4/5] p-5 sm:aspect-[16/10] sm:p-8' : slide.phone ? 'aspect-[4/5] sm:aspect-[16/10]' : 'aspect-[16/10]'"
           >
+            <component
+              :is="slide.full ? 'button' : 'div'"
+              :type="slide.full ? 'button' : undefined"
+              :aria-label="slide.full ? `Enlarge: ${slide.alt}` : undefined"
+              class="group relative h-full w-full"
+              :class="slide.full && 'cursor-zoom-in'"
+              @click="slide.full && openZoom(i)"
+            >
+            <picture class="contents">
+            <source
+              v-if="slide.phone && view !== 'mobile'"
+              media="(max-width: 639px)"
+              :srcset="slide.phone.srcset"
+              sizes="88vw"
+              :width="slide.phone.width"
+              :height="slide.phone.height"
+            />
             <img
               :src="shotFor(slide).src"
               :srcset="shotFor(slide).srcset"
@@ -151,13 +256,20 @@ onBeforeUnmount(() => {
               decoding="async"
               :class="view === 'mobile' && slide.mobile ? 'h-full w-auto rounded-lg shadow-sm' : 'h-full w-full object-cover object-top'"
             />
+            </picture>
+              <span v-if="slide.full" aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">Click to enlarge</span>
+            </component>
           </div>
-          <figcaption v-if="slide.caption" class="mt-3 text-sm text-muted dark:text-night-muted">{{ slide.caption }}</figcaption>
+          <figcaption v-if="slide.caption" :class="named && 'sr-only'" class="mt-3 text-sm text-muted dark:text-night-muted">{{ slide.caption }}</figcaption>
         </figure>
       </li>
     </ul>
 
-    <div v-if="total > 1" class="mt-5 flex items-center justify-between gap-4">
+    <p v-if="named" class="mt-3 text-sm text-muted tabular-nums sm:hidden dark:text-night-muted" aria-live="polite">
+      <span class="font-medium text-heading dark:text-night-heading">{{ slides[active].caption }}</span> · {{ active + 1 }} / {{ total }}
+    </p>
+
+    <div v-if="total > 1 && !named" class="mt-5 flex items-center justify-between gap-4">
       <div class="flex items-center">
         <button
           v-for="(slide, i) in slides"
@@ -176,5 +288,94 @@ onBeforeUnmount(() => {
       </div>
       <p class="text-sm tabular-nums text-muted dark:text-night-muted" aria-live="polite">{{ active + 1 }} / {{ total }}</p>
     </div>
+
+    <dialog
+      ref="zoom"
+      :aria-label="`${label} screenshots, enlarged`"
+      class="m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden bg-transparent p-0 text-white backdrop:bg-ink/90 backdrop:backdrop-blur-sm"
+      @click="onZoomBackdrop"
+      @close="onZoomClose"
+      @keydown="onZoomKey"
+    >
+      <div v-if="zoomOpen" class="flex h-full flex-col">
+        <div class="flex items-center justify-between gap-4 px-4 pt-4 sm:px-6">
+          <p class="truncate text-sm text-white/80" aria-live="polite">
+            <template v-if="named">{{ label }}<span class="sr-only"> · {{ slides[zoomActive].caption }}</span></template>
+            <template v-else>{{ zoomActive + 1 }} / {{ total }}<span v-if="slides[zoomActive]?.caption"> · {{ slides[zoomActive].caption }}</span></template>
+          </p>
+          <button type="button" class="inline-flex size-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20" aria-label="Close" @click="closeZoom">
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <div class="relative min-h-0 flex-1">
+          <ul
+            ref="zoomTrack"
+            class="flex h-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            @scroll.passive="onZoomScroll"
+          >
+            <li
+              v-for="(slide, i) in slides"
+              :key="i"
+              data-zoom-slide
+              class="flex h-full w-full shrink-0 snap-center items-center justify-center p-4 sm:px-20 sm:py-6"
+              role="group"
+              :aria-label="`${i + 1} of ${total}`"
+            >
+              <picture v-if="slide.full && Math.abs(i - zoomActive) <= 1" class="contents">
+                <source v-if="slide.phoneFull" media="(max-width: 639px)" :srcset="slide.phoneFull" />
+                <img :src="slide.full" :alt="slide.alt" decoding="async" class="max-h-full max-w-full rounded-lg object-contain" />
+              </picture>
+            </li>
+          </ul>
+          <button
+            type="button"
+            class="absolute top-1/2 left-4 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 disabled:opacity-30 sm:inline-flex"
+            :disabled="zoomActive === 0"
+            aria-label="Previous screenshot"
+            @click="zoomStep(-1)"
+          >
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          <button
+            type="button"
+            class="absolute top-1/2 right-4 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 disabled:opacity-30 sm:inline-flex"
+            :disabled="zoomActive === total - 1"
+            aria-label="Next screenshot"
+            @click="zoomStep(1)"
+          >
+            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
+        </div>
+        <p v-if="named" class="px-4 pb-6 text-center text-sm text-white/70 tabular-nums sm:hidden">
+          <span class="font-medium text-white">{{ slides[zoomActive].caption }}</span> · {{ zoomActive + 1 }} / {{ total }}
+        </p>
+        <div v-if="named" ref="zoomTabs" class="hidden justify-center gap-2 overflow-x-auto px-4 pb-6 [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
+          <button
+            v-for="(slide, i) in slides"
+            :key="i"
+            type="button"
+            class="shrink-0 rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
+            :class="zoomActive === i ? 'bg-white text-ink' : 'bg-white/10 text-white/80 hover:bg-white/20'"
+            :aria-current="zoomActive === i ? 'true' : undefined"
+            @click="zoomTo(i)"
+          >
+            {{ slide.caption }}
+          </button>
+        </div>
+        <div v-else class="flex justify-center pb-5 sm:pb-6">
+          <button
+            v-for="(slide, i) in slides"
+            :key="i"
+            type="button"
+            class="inline-flex size-7 items-center justify-center"
+            :aria-label="`Show screenshot ${i + 1}`"
+            :aria-current="zoomActive === i ? 'true' : undefined"
+            @click="zoomTo(i)"
+          >
+            <span class="block size-2 rounded-full transition-colors" :class="zoomActive === i ? 'bg-white' : 'bg-white/35'"></span>
+          </button>
+        </div>
+      </div>
+    </dialog>
   </div>
 </template>

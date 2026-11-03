@@ -1,59 +1,53 @@
 ---
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Facts from '../components/Facts.astro';
 import Section from '../components/Section.astro';
-import WorkCard from '../components/WorkCard.astro';
+import Principle from '../components/Principle.astro';
+import Gallery from '../components/Gallery.vue';
 import ProjectCard from '../components/ProjectCard.astro';
 import { site } from '../data/site';
+import { principles } from '../data/principles';
+import { storeThemes } from '../data/themes';
 
-const work = (await getCollection('work', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+const themeGalleries = await Promise.all(
+  storeThemes.map((theme) =>
+    Promise.all(
+      theme.slides.map(async (slide) => {
+        const img = await getImage({ src: slide.image, widths: [640, 1000, 1600], format: 'webp' });
+        const full = await getImage({ src: slide.image, width: 1920, format: 'webp' });
+        const phone = await getImage({ src: slide.phone, widths: [400, 600, 900], format: 'webp' });
+        const phoneFull = await getImage({ src: slide.phone, width: 900, format: 'webp' });
+        return {
+          full: full.src,
+          phoneFull: phoneFull.src,
+          phone: { src: phone.src, srcset: phone.srcSet.attribute, width: slide.phone.width, height: slide.phone.height },
+          desktop: { src: img.src, srcset: img.srcSet.attribute, width: slide.image.width, height: slide.image.height },
+          alt: slide.alt,
+          caption: slide.caption,
+        };
+      }),
+    ),
+  ),
+);
+
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 
 const jobs = [
-  {
-    title: 'Front-End Developer',
-    company: 'Marbill Technologies',
-    dates: 'Jun 2022 – Present',
-    place: 'Marbella',
-    points: [
-      'Developed and maintained 10+ custom storefront themes for a growing e-commerce subscription platform with a high volume of monthly orders.',
-      'Shipped 100+ landing pages and promo campaigns with the design and marketing teams, often with tight launch dates.',
-      'Built the product, cart, checkout and subscription pages, making them easier to use on mobile and quicker to buy from.',
-    ],
-  },
-  {
-    title: 'Freelance / Self-Directed Projects',
-    dates: 'Jan 2020 – May 2022',
-    place: 'Bucharest',
-    points: [
-      'Two years teaching myself front-end, from my first HTML page to full Vue apps.',
-      'Completed the Udacity Front End Web Developer Nanodegree and the Zero To Mastery Vue.js Developer track.',
-    ],
-  },
-  {
-    title: 'Operations Manager',
-    company: 'Azelis Romania',
-    dates: 'Feb 2011 – Dec 2019',
-    place: 'Bucharest',
-    points: [
-      'Led the customer service team: planned the daily work, set priorities and dealt with issues as they came up, much like working in sprints today.',
-    ],
-  },
+  { dates: 'Jun 2022 – Present', title: 'Front-End Developer', company: 'Marbill Technologies', place: 'Marbella' },
+  { dates: 'Jan 2020 – May 2022', title: 'Freelance / Self-Directed Projects', place: 'Bucharest' },
+  { dates: 'Feb 2011 – Dec 2019', title: 'Operations Manager', company: 'Azelis Romania', place: 'Bucharest' },
 ];
 
 const skills = [
   { label: 'Front-end', value: 'HTML5, CSS3, Tailwind CSS, Bootstrap 5, JavaScript (ES6+), Twig (Liquid-style templating), Vue 3, responsive design, HTML email' },
+  { label: 'Shopify', value: 'Liquid, Online Store 2.0 sections and blocks, Dawn-based theme customisation, metafields' },
   { label: 'CMS & e-commerce', value: 'Theme development, reusable sections, landing pages, product, cart and checkout pages, multi-language sites' },
   { label: 'UX & quality', value: 'Usability, accessibility, Core Web Vitals, semantic HTML, technical SEO' },
   { label: 'Tools', value: 'Git/GitHub, Figma, Webpack, Firebase, Jest, Jira, ClickUp, AI coding assistants (GitHub Copilot, Claude, Gemini, ChatGPT)' },
   { label: 'Languages', value: 'Romanian (native), Spanish (C2), English (C1)' },
-];
-
-const stats = [
-  { value: '4+', label: 'years coding' },
-  { value: '100+', label: 'landing pages' },
-  { value: '10+', label: 'store themes' },
 ];
 
 const contacts = [
@@ -63,11 +57,31 @@ const contacts = [
 ---
 <Base>
   <Hero />
+  <Facts />
 
   <Section id="work" title="Selected work" band>
-    <p data-reveal class="max-w-xl text-band-muted">Most of my client work is under NDA, so the brands stay unnamed and the projects go by what they are.</p>
-    <div class="mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2">
-      {work.map((entry, i) => <WorkCard entry={entry} eager={i < 2} index={i} />)}
+    <p data-reveal class="max-w-xl text-band-muted">Four things I care about on every page, and the work that shows it. Brands stay hidden under NDA.</p>
+    <div class="mt-12 divide-y divide-band-hairline dark:divide-band-night-hairline">
+      {principles.map((principle, i) => <Principle principle={principle} index={i} />)}
+    </div>
+  </Section>
+
+  <Section id="themes" title="Store themes">
+    <p data-reveal class="max-w-xl text-muted dark:text-night-muted">A small sample: I've shipped 20+ store themes, and these two I built end to end. Each one is a reusable template that can be dressed up for a different brand.</p>
+    <div class="mt-10 space-y-14">
+      {storeThemes.map((theme, i) => (
+        <article class="border-t border-hairline pt-10 first:border-t-0 first:pt-0 dark:border-night-hairline">
+          <div data-reveal class="max-w-2xl">
+            <p aria-hidden="true" class="font-display text-sm text-muted tabular-nums dark:text-night-muted">{String(i + 1).padStart(2, '0')}</p>
+            <p class="mt-2 text-xs font-semibold tracking-wide text-muted uppercase dark:text-night-muted">{theme.stack}</p>
+            <h3 class="mt-2 font-display text-xl font-medium text-balance text-heading sm:text-2xl dark:text-night-heading">{theme.title}</h3>
+            <p class="mt-2 leading-relaxed text-pretty">{theme.body}</p>
+          </div>
+          <div data-reveal style="--i: 1" class="mt-6">
+            <Gallery client:visible slides={themeGalleries[i]} label={theme.name} />
+          </div>
+        </article>
+      ))}
     </div>
   </Section>
 
@@ -80,28 +94,22 @@ const contacts = [
   </Section>
 
   <Section id="about" title="About">
-    <div class="max-w-2xl space-y-5 text-lg leading-relaxed">
-      <p data-reveal>I didn't start in tech. I ran a customer service team in Bucharest and was the go-to person when our ERP misbehaved. In 2020 I taught myself front-end, and in 2022 I joined Marbill, where I'm now a senior developer in a team of four.</p>
-      <p data-reveal style="--i: 1">What I like most about e-commerce is how quickly you see the result: a faster checkout or a clearer campaign page shows up in the numbers almost right away. That's also why I enjoy working closely with marketing. I'm usually the one who turns their ideas into pages we can ship, and the numbers tell us both what worked.</p>
+    <div class="max-w-2xl">
+      <p data-reveal class="font-display text-3xl leading-tight font-medium text-balance text-heading sm:text-4xl dark:text-night-heading">I build the pages where people decide to buy.</p>
+      <div class="mt-6 space-y-5 text-lg leading-relaxed">
+        <p data-reveal style="--i: 1">Product pages, carts, checkouts and the campaign pages that lead to them. I joined Marbill in 2022 and I'm now a senior developer in a team of four. <em class="font-display font-medium text-[1.15em] text-heading dark:text-night-heading not-italic">Six</em> years of code, <em class="font-display font-medium text-[1.15em] text-heading dark:text-night-heading not-italic">20+</em> store themes and more landing pages than I can count.</p>
+        <p data-reveal style="--i: 2">What I like most about e-commerce is how quickly you see the result: a faster checkout or a clearer campaign page shows up in the numbers almost right away. That's also why I enjoy working closely with marketing. I'm usually the one who turns their ideas into pages we can ship, and the numbers tell us both what worked.</p>
+      </div>
     </div>
-    <p data-reveal style="--i: 2" class="mt-8 flex flex-wrap gap-x-2 gap-y-1 text-lg text-muted dark:text-night-muted">
-      {stats.map((stat, i) => (
-        <span class="whitespace-nowrap"><span class="font-semibold text-heading dark:text-night-heading">{stat.value}</span> {stat.label}{i < stats.length - 1 && <span aria-hidden="true" class="ml-2">·</span>}</span>
-      ))}
-    </p>
   </Section>
 
   <Section id="experience" title="Experience">
-    <ol class="space-y-12">
-      {jobs.map((job) => (
-        <li data-reveal>
-          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-            <h3 class="font-semibold text-heading dark:text-night-heading">{job.title}{job.company && <span class="font-normal text-muted dark:text-night-muted"> · {job.company}</span>}</h3>
-            <p class="text-sm text-muted dark:text-night-muted">{job.dates} · {job.place}</p>
-          </div>
-          <ul class="mt-3 max-w-2xl list-disc space-y-1.5 pl-5 leading-relaxed marker:text-line dark:marker:text-night-line">
-            {job.points.map((point) => <li>{point}</li>)}
-          </ul>
+    <ol class="divide-y divide-hairline border-y border-hairline dark:divide-night-hairline dark:border-night-hairline">
+      {jobs.map((job, i) => (
+        <li data-reveal style={`--i: ${i}`} class="grid gap-1 py-4 lg:grid-cols-[10.5rem_minmax(0,1fr)_auto] lg:items-baseline lg:gap-6">
+          <p class="text-sm text-muted tabular-nums dark:text-night-muted">{job.dates}<span class="lg:hidden"> · {job.place}</span></p>
+          <h3 class="font-semibold text-heading dark:text-night-heading">{job.title}{job.company && <span class="font-normal text-muted dark:text-night-muted"> · {job.company}</span>}</h3>
+          <p class="hidden text-sm text-muted lg:block dark:text-night-muted">{job.place}</p>
         </li>
       ))}
     </ol>
