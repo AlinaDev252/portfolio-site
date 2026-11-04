@@ -272,7 +272,6 @@ onBeforeUnmount(() => {
         :key="i"
         class="w-[88%] shrink-0 snap-center md:w-full"
         :aria-label="`${i + 1} of ${total}`"
-        role="group"
       >
         <figure>
           <div
@@ -370,7 +369,6 @@ onBeforeUnmount(() => {
               :key="i"
               data-zoom-slide
               class="flex h-full w-full shrink-0 snap-center items-center justify-center p-4 sm:px-20 sm:py-6"
-              role="group"
               :aria-label="`${i + 1} of ${total}`"
             >
               <picture v-if="slide.full && Math.abs(i - zoomActive) <= 1" class="contents">

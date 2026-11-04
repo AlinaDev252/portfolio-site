@@ -24,8 +24,8 @@ const full = await getImage({ src: image, width: Math.min(image.width, 1920) });
   <Image
     src={image}
     alt={alt}
-    widths={[720, 1080, 1440]}
-    sizes="(min-width: 1024px) 720px, 100vw"
+    widths={[400, 560, 720, 1080, 1440]}
+    sizes="(min-width: 1024px) 720px, (min-width: 768px) 462px, calc(100vw - 2rem)"
     class="w-full transition-transform duration-500 ease-(--ease-soft) group-hover:scale-[1.015]"
   />
   <span aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100"><span class="[@media(hover:none)]:hidden">Click</span><span class="hidden [@media(hover:none)]:inline">Tap</span> to enlarge</span>

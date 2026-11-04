@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://alinadev252.github.io',
   base: '/portfolio-site',
+  build: {
+    inlineStylesheets: 'always',
+  },
   integrations: [
     vue(),
     sitemap({
