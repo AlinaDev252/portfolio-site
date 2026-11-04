@@ -306,6 +306,8 @@ onBeforeUnmount(() => {
               :loading="eager && i === 0 ? 'eager' : 'lazy'"
               :fetchpriority="eager && i === 0 ? 'high' : undefined"
               decoding="async"
+              draggable="false"
+              class="no-drag"
               :class="view === 'mobile' && slide.mobile ? 'h-full w-auto rounded-lg shadow-sm' : 'h-full w-full object-cover object-top'"
             />
             </picture>
@@ -373,7 +375,7 @@ onBeforeUnmount(() => {
             >
               <picture v-if="slide.full && Math.abs(i - zoomActive) <= 1" class="contents">
                 <source v-if="slide.phoneFull" media="(max-width: 639px)" :srcset="slide.phoneFull" />
-                <img :src="slide.full" :alt="zoomAltFor(slide)" decoding="async" class="max-h-full max-w-full rounded-lg object-contain" />
+                <img :src="slide.full" :alt="zoomAltFor(slide)" decoding="async" draggable="false" class="no-drag max-h-full max-w-full rounded-lg object-contain" />
               </picture>
             </li>
           </ul>

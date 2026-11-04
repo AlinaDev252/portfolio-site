@@ -76,6 +76,15 @@
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
   }
+  .no-drag {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
