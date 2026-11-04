@@ -21,14 +21,14 @@ const quick = status === 'in-progress' ? undefined : liveUrl ? { label: 'View li
     )}
   </div>
   <p class="mt-2 leading-relaxed">{summary}</p>
-  <p class="mt-3 text-sm text-muted dark:text-night-muted">{stack.join(' · ')}</p>
+  <p class="mt-3 text-sm text-muted dark:text-night-muted">{stack.map((item, i) => <>{i > 0 && ' · '}<span class="whitespace-nowrap">{item}</span></>)}</p>
   <div class="mt-auto pt-5">
     {status === 'in-progress' || links.length === 0 ? (
       <span class="inline-block rounded-full border border-hairline px-2.5 py-0.5 text-xs text-muted dark:border-night-hairline dark:text-night-muted">In progress</span>
     ) : (
       <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-heading dark:text-night-heading">
         {links.map((l) => (
-          <li><a href={l.href} rel="noopener" class="link">{l.label}<span class="sr-only"> for {title}</span></a></li>
+          <li><a href={l.href} rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']">{l.label}<span class="sr-only"> for {title}</span></a></li>
         ))}
       </ul>
     )}

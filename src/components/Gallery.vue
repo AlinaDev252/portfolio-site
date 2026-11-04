@@ -12,13 +12,14 @@ interface Slide {
   desktop: Shot;
   mobile?: Shot;
   alt: string;
+  phoneAlt?: string;
   caption?: string;
   full?: string;
   phone?: Shot;
   phoneFull?: string;
 }
 
-const props = defineProps<{ slides: Slide[]; label: string }>();
+const props = defineProps<{ slides: Slide[]; label: string; eager?: boolean }>();
 
 const view = ref<'desktop' | 'mobile'>('desktop');
 const active = ref(0);
@@ -33,6 +34,25 @@ const total = computed(() => props.slides.length);
 const named = computed(() => total.value > 1 && props.slides.every((s) => s.caption));
 const tabs = ref<HTMLElement | null>(null);
 const zoomTabs = ref<HTMLElement | null>(null);
+const zoomClose = ref<HTMLButtonElement | null>(null);
+const isPhone = ref(false);
+const tabsFade = ref('none');
+let phoneQuery: MediaQueryList | undefined;
+let tabsObserver: ResizeObserver | undefined;
+
+const syncPhone = () => {
+  isPhone.value = phoneQuery?.matches ?? false;
+};
+
+const updateTabsFade = () => {
+  const row = tabs.value;
+  if (!row) return;
+  const left = row.scrollLeft > 1;
+  const right = row.scrollLeft + row.clientWidth < row.scrollWidth - 1;
+  tabsFade.value = left || right
+    ? `linear-gradient(to right, ${left ? 'transparent, #000 2.5rem' : '#000'}, ${right ? '#000 calc(100% - 2.5rem), transparent' : '#000'})`
+    : 'none';
+};
 
 const revealTab = (row: HTMLElement | null, index: number) => {
   const tab = row?.children[index] as HTMLElement | undefined;
@@ -78,16 +98,19 @@ const goTo = (index: number) => {
   active.value = index;
 };
 
-const step = (dir: number) => goTo(Math.min(total.value - 1, Math.max(0, active.value + dir)));
+const step = (dir: number) => {
+  const next = Math.min(total.value - 1, Math.max(0, active.value + dir));
+  if (next !== active.value) goTo(next);
+};
+
+const focusSlide = (index: number) => items()[index]?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
 
 const onKey = (event: KeyboardEvent) => {
-  if (event.key === 'ArrowRight') {
-    event.preventDefault();
-    step(1);
-  } else if (event.key === 'ArrowLeft') {
-    event.preventDefault();
-    step(-1);
-  }
+  if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+  event.preventDefault();
+  const fromSlide = (event.target as HTMLElement).closest('li') !== null;
+  step(event.key === 'ArrowRight' ? 1 : -1);
+  if (fromSlide) nextTick(() => focusSlide(active.value));
 };
 
 const zoomItems = () => Array.from(zoomTrack.value?.children ?? []) as HTMLElement[];
@@ -100,7 +123,10 @@ const zoomTo = (index: number, smooth = true) => {
   zoomActive.value = index;
 };
 
-const zoomStep = (dir: number) => zoomTo(Math.min(total.value - 1, Math.max(0, zoomActive.value + dir)));
+const zoomStep = (dir: number) => {
+  const next = Math.min(total.value - 1, Math.max(0, zoomActive.value + dir));
+  if (next !== zoomActive.value) zoomTo(next);
+};
 
 const onZoomScroll = () => {
   cancelAnimationFrame(zoomFrame);
@@ -115,13 +141,17 @@ const openZoom = async (index: number) => {
   zoom.value?.showModal();
   await nextTick();
   zoomTo(index, false);
+  zoomClose.value?.focus();
 };
 
 const closeZoom = () => zoom.value?.close();
 
-const onZoomClose = () => {
+const onZoomClose = async () => {
   zoomOpen.value = false;
-  goTo(zoomActive.value);
+  const index = zoomActive.value;
+  goTo(index);
+  await nextTick();
+  focusSlide(index);
 };
 
 const onZoomKey = (event: KeyboardEvent) => {
@@ -141,9 +171,27 @@ const onZoomBackdrop = (event: MouseEvent) => {
 
 const shotFor = (slide: Slide) => (view.value === 'mobile' && slide.mobile ? slide.mobile : slide.desktop);
 
-onMounted(() => track.value?.addEventListener('scroll', onScroll, { passive: true }));
+const altFor = (slide: Slide) => {
+  if (view.value === 'mobile' && slide.mobile) return `${slide.alt}, mobile`;
+  return isPhone.value && slide.phone ? (slide.phoneAlt ?? slide.alt) : slide.alt;
+};
+
+const zoomAltFor = (slide: Slide) => (isPhone.value && slide.phoneFull ? (slide.phoneAlt ?? slide.alt) : slide.alt);
+
+onMounted(() => {
+  track.value?.addEventListener('scroll', onScroll, { passive: true });
+  phoneQuery = matchMedia('(max-width: 639px)');
+  syncPhone();
+  phoneQuery.addEventListener('change', syncPhone);
+  if (tabs.value) {
+    tabsObserver = new ResizeObserver(updateTabsFade);
+    tabsObserver.observe(tabs.value);
+  }
+});
 onBeforeUnmount(() => {
   track.value?.removeEventListener('scroll', onScroll);
+  phoneQuery?.removeEventListener('change', syncPhone);
+  tabsObserver?.disconnect();
   cancelAnimationFrame(frame);
   cancelAnimationFrame(zoomFrame);
 });
@@ -156,7 +204,10 @@ onBeforeUnmount(() => {
         v-if="named"
         ref="tabs"
         class="flex min-w-0 flex-1 gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        :style="{ maskImage: tabsFade }"
+        role="group"
         :aria-label="`${label} pages`"
+        @scroll.passive="updateTabsFade"
       >
         <button
           v-for="(slide, i) in slides"
@@ -190,8 +241,8 @@ onBeforeUnmount(() => {
       <div class="hidden shrink-0 items-center gap-2 md:flex">
         <button
           type="button"
-          class="inline-flex size-10 items-center justify-center rounded-full border border-hairline text-heading transition-colors hover:border-line disabled:opacity-40 dark:border-night-hairline dark:text-night-heading dark:hover:border-night-line"
-          :disabled="active === 0"
+          class="inline-flex size-10 items-center justify-center rounded-full border border-hairline text-heading transition-colors hover:border-line aria-disabled:cursor-default aria-disabled:opacity-40 aria-disabled:hover:border-hairline dark:border-night-hairline dark:text-night-heading dark:hover:border-night-line dark:aria-disabled:hover:border-night-hairline"
+          :aria-disabled="active === 0"
           aria-label="Previous screenshot"
           @click="step(-1)"
         >
@@ -199,8 +250,8 @@ onBeforeUnmount(() => {
         </button>
         <button
           type="button"
-          class="inline-flex size-10 items-center justify-center rounded-full border border-hairline text-heading transition-colors hover:border-line disabled:opacity-40 dark:border-night-hairline dark:text-night-heading dark:hover:border-night-line"
-          :disabled="active === total - 1"
+          class="inline-flex size-10 items-center justify-center rounded-full border border-hairline text-heading transition-colors hover:border-line aria-disabled:cursor-default aria-disabled:opacity-40 aria-disabled:hover:border-hairline dark:border-night-hairline dark:text-night-heading dark:hover:border-night-line dark:aria-disabled:hover:border-night-hairline"
+          :aria-disabled="active === total - 1"
           aria-label="Next screenshot"
           @click="step(1)"
         >
@@ -231,9 +282,10 @@ onBeforeUnmount(() => {
             <component
               :is="slide.full ? 'button' : 'div'"
               :type="slide.full ? 'button' : undefined"
-              :aria-label="slide.full ? `Enlarge: ${slide.alt}` : undefined"
+              :aria-label="slide.full ? `Enlarge: ${altFor(slide)}` : undefined"
+              :tabindex="slide.full ? (active === i ? 0 : -1) : undefined"
               class="group relative h-full w-full"
-              :class="slide.full && 'cursor-zoom-in'"
+              :class="slide.full && 'cursor-zoom-in focus-visible:-outline-offset-4'"
               @click="slide.full && openZoom(i)"
             >
             <picture class="contents">
@@ -251,13 +303,14 @@ onBeforeUnmount(() => {
               :sizes="view === 'mobile' && slide.mobile ? '(min-width: 768px) 320px, 45vw' : '(min-width: 1024px) 940px, 90vw'"
               :width="shotFor(slide).width"
               :height="shotFor(slide).height"
-              :alt="view === 'mobile' && slide.mobile ? `${slide.alt}, mobile` : slide.alt"
-              :loading="i === 0 ? 'eager' : 'lazy'"
+              :alt="altFor(slide)"
+              :loading="eager && i === 0 ? 'eager' : 'lazy'"
+              :fetchpriority="eager && i === 0 ? 'high' : undefined"
               decoding="async"
               :class="view === 'mobile' && slide.mobile ? 'h-full w-auto rounded-lg shadow-sm' : 'h-full w-full object-cover object-top'"
             />
             </picture>
-              <span v-if="slide.full" aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">Click to enlarge</span>
+              <span v-if="slide.full" aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100"><span class="[@media(hover:none)]:hidden">Click</span><span class="hidden [@media(hover:none)]:inline">Tap</span> to enlarge</span>
             </component>
           </div>
           <figcaption v-if="slide.caption" :class="named && 'sr-only'" class="mt-3 text-sm text-muted dark:text-night-muted">{{ slide.caption }}</figcaption>
@@ -265,18 +318,14 @@ onBeforeUnmount(() => {
       </li>
     </ul>
 
-    <p v-if="named" class="mt-3 text-sm text-muted tabular-nums sm:hidden dark:text-night-muted" aria-live="polite">
-      <span class="font-medium text-heading dark:text-night-heading">{{ slides[active].caption }}</span> · {{ active + 1 }} / {{ total }}
-    </p>
-
-    <div v-if="total > 1 && !named" class="mt-5 flex items-center justify-between gap-4">
-      <div class="flex items-center">
+    <div v-if="total > 1" class="flex items-center justify-between gap-x-4" :class="named ? 'mt-3 sm:hidden' : 'mt-5'">
+      <div class="flex shrink-0 items-center">
         <button
           v-for="(slide, i) in slides"
           :key="i"
           type="button"
           class="group inline-flex size-6 items-center justify-center"
-          :aria-label="`Show screenshot ${i + 1}`"
+          :aria-label="named ? `Show ${slide.caption}` : `Show screenshot ${i + 1}`"
           :aria-current="active === i ? 'true' : undefined"
           @click="goTo(i)"
         >
@@ -286,13 +335,15 @@ onBeforeUnmount(() => {
           ></span>
         </button>
       </div>
-      <p class="text-sm tabular-nums text-muted dark:text-night-muted" aria-live="polite">{{ active + 1 }} / {{ total }}</p>
+      <p class="min-w-0 truncate text-sm tabular-nums text-muted dark:text-night-muted" aria-live="polite">
+        <template v-if="named"><span class="font-medium text-heading dark:text-night-heading">{{ slides[active].caption }}</span> · </template>{{ active + 1 }} / {{ total }}
+      </p>
     </div>
 
     <dialog
       ref="zoom"
       :aria-label="`${label} screenshots, enlarged`"
-      class="m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden bg-transparent p-0 text-white backdrop:bg-ink/90 backdrop:backdrop-blur-sm"
+      class="m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden bg-transparent p-0 text-white backdrop:bg-ink/90 backdrop:backdrop-blur-sm [&_:focus-visible]:outline-white"
       @click="onZoomBackdrop"
       @close="onZoomClose"
       @keydown="onZoomKey"
@@ -303,7 +354,7 @@ onBeforeUnmount(() => {
             <template v-if="named">{{ label }}<span class="sr-only"> · {{ slides[zoomActive].caption }}</span></template>
             <template v-else>{{ zoomActive + 1 }} / {{ total }}<span v-if="slides[zoomActive]?.caption"> · {{ slides[zoomActive].caption }}</span></template>
           </p>
-          <button type="button" class="inline-flex size-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20" aria-label="Close" @click="closeZoom">
+          <button ref="zoomClose" type="button" class="inline-flex size-11 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20" aria-label="Close" @click="closeZoom">
             <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
           </button>
         </div>
@@ -311,6 +362,7 @@ onBeforeUnmount(() => {
           <ul
             ref="zoomTrack"
             class="flex h-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            tabindex="-1"
             @scroll.passive="onZoomScroll"
           >
             <li
@@ -323,14 +375,14 @@ onBeforeUnmount(() => {
             >
               <picture v-if="slide.full && Math.abs(i - zoomActive) <= 1" class="contents">
                 <source v-if="slide.phoneFull" media="(max-width: 639px)" :srcset="slide.phoneFull" />
-                <img :src="slide.full" :alt="slide.alt" decoding="async" class="max-h-full max-w-full rounded-lg object-contain" />
+                <img :src="slide.full" :alt="zoomAltFor(slide)" decoding="async" class="max-h-full max-w-full rounded-lg object-contain" />
               </picture>
             </li>
           </ul>
           <button
             type="button"
-            class="absolute top-1/2 left-4 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 disabled:opacity-30 sm:inline-flex"
-            :disabled="zoomActive === 0"
+            class="absolute top-1/2 left-4 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-white/10 sm:inline-flex"
+            :aria-disabled="zoomActive === 0"
             aria-label="Previous screenshot"
             @click="zoomStep(-1)"
           >
@@ -338,15 +390,15 @@ onBeforeUnmount(() => {
           </button>
           <button
             type="button"
-            class="absolute top-1/2 right-4 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 disabled:opacity-30 sm:inline-flex"
-            :disabled="zoomActive === total - 1"
+            class="absolute top-1/2 right-4 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-white/10 sm:inline-flex"
+            :aria-disabled="zoomActive === total - 1"
             aria-label="Next screenshot"
             @click="zoomStep(1)"
           >
             <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
           </button>
         </div>
-        <p v-if="named" class="px-4 pb-6 text-center text-sm text-white/70 tabular-nums sm:hidden">
+        <p v-if="named" class="px-4 pb-1 text-center text-sm text-white/70 tabular-nums sm:hidden">
           <span class="font-medium text-white">{{ slides[zoomActive].caption }}</span> · {{ zoomActive + 1 }} / {{ total }}
         </p>
         <div v-if="named" ref="zoomTabs" class="hidden justify-center gap-2 overflow-x-auto px-4 pb-6 [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
@@ -362,13 +414,13 @@ onBeforeUnmount(() => {
             {{ slide.caption }}
           </button>
         </div>
-        <div v-else class="flex justify-center pb-5 sm:pb-6">
+        <div class="flex justify-center pb-5 sm:pb-6" :class="named && 'sm:hidden'">
           <button
             v-for="(slide, i) in slides"
             :key="i"
             type="button"
             class="inline-flex size-7 items-center justify-center"
-            :aria-label="`Show screenshot ${i + 1}`"
+            :aria-label="named ? `Show ${slide.caption}` : `Show screenshot ${i + 1}`"
             :aria-current="zoomActive === i ? 'true' : undefined"
             @click="zoomTo(i)"
           >

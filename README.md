@@ -20,7 +20,3 @@ npm run dev
 3. Set `placeholder: false` once the real screenshots and copy are in. Use `draft: true` to hide a project.
 
 Projects are sorted by `order`.
-
-## Replace the hero image
-
-Swap `src/assets/hero.png` for your photo or a work image (portrait, about 4:5), update the import in `src/data/site.ts` if the file name changes, and add a short `alt` text there.

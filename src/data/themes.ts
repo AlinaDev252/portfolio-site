@@ -5,6 +5,7 @@ export interface ThemeSlide {
   phone: ImageMetadata;
   caption: string;
   alt: string;
+  phoneAlt: string;
 }
 
 export interface StoreTheme {
@@ -32,6 +33,7 @@ const slidesFor = (folder: string, name: string): ThemeSlide[] =>
     phone: shots[`../assets/work/themes/${folder}/${key}-phone.png`],
     caption,
     alt: `${name}: ${caption.toLowerCase()} on desktop with the phone version beside it`,
+    phoneAlt: `${name}: ${caption.toLowerCase()} on a phone`,
   }));
 
 export const storeThemes: StoreTheme[] = [

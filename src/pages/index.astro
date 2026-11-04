@@ -8,7 +8,7 @@ import Section from '../components/Section.astro';
 import Principle from '../components/Principle.astro';
 import Gallery from '../components/Gallery.vue';
 import ProjectCard from '../components/ProjectCard.astro';
-import { site } from '../data/site';
+import { site, url } from '../data/site';
 import { principles } from '../data/principles';
 import { storeThemes } from '../data/themes';
 
@@ -26,6 +26,7 @@ const themeGalleries = await Promise.all(
           phone: { src: phone.src, srcset: phone.srcSet.attribute, width: slide.phone.width, height: slide.phone.height },
           desktop: { src: img.src, srcset: img.srcSet.attribute, width: slide.image.width, height: slide.image.height },
           alt: slide.alt,
+          phoneAlt: slide.phoneAlt,
           caption: slide.caption,
         };
       }),
@@ -36,9 +37,9 @@ const themeGalleries = await Promise.all(
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 
 const jobs = [
-  { dates: 'Jun 2022 – Present', title: 'Front-End Developer', company: 'Marbill Technologies', place: 'Marbella' },
-  { dates: 'Jan 2020 – May 2022', title: 'Freelance / Self-Directed Projects', place: 'Bucharest' },
-  { dates: 'Feb 2011 – Dec 2019', title: 'Operations Manager', company: 'Azelis Romania', place: 'Bucharest' },
+  { dates: 'Jun 2022 – Present', title: 'Front-end developer', company: 'Marbill Technologies', place: 'Marbella' },
+  { dates: 'Jan 2020 – May 2022', title: 'Freelance / self-directed projects', place: 'Bucharest' },
+  { dates: 'Feb 2011 – Dec 2019', title: 'Operations manager', company: 'Azelis Romania', place: 'Bucharest' },
 ];
 
 const skills = [
@@ -53,6 +54,7 @@ const skills = [
 const contacts = [
   { label: 'LinkedIn', href: site.linkedin },
   { label: 'GitHub', href: site.github },
+  { label: 'Download CV', href: url(site.cv), download: true },
 ];
 ---
 <Base>
@@ -60,14 +62,14 @@ const contacts = [
   <Facts />
 
   <Section id="work" title="Selected work" band>
-    <p data-reveal class="max-w-xl text-band-muted">Four things I care about on every page, and the work that shows it. Brands stay hidden under NDA.</p>
+    <p data-reveal class="max-w-xl text-pretty text-band-muted">Four things I care about on every page, and the work that shows it. Brands stay hidden under NDA.</p>
     <div class="mt-12 divide-y divide-band-hairline dark:divide-band-night-hairline">
       {principles.map((principle, i) => <Principle principle={principle} index={i} />)}
     </div>
   </Section>
 
   <Section id="themes" title="Store themes">
-    <p data-reveal class="max-w-xl text-muted dark:text-night-muted">A small sample: I've shipped 20+ store themes, and these two I built end to end. Each one is a reusable template that can be dressed up for a different brand.</p>
+    <p data-reveal class="max-w-xl text-pretty text-muted dark:text-night-muted">Two of the 10+ store themes I've built. Each is a reusable template that can be restyled for a different brand.</p>
     <div class="mt-10 space-y-14">
       {storeThemes.map((theme, i) => (
         <article class="border-t border-hairline pt-10 first:border-t-0 first:pt-0 dark:border-night-hairline">
@@ -86,18 +88,18 @@ const contacts = [
   </Section>
 
   <Section id="projects" title="Personal projects">
-    <p data-reveal class="max-w-xl text-muted dark:text-night-muted">What I build on my own time, to learn and try new things.</p>
+    <p data-reveal class="max-w-xl text-pretty text-muted dark:text-night-muted">What I build on my own time, to learn and try new things.</p>
     <div class="mt-8 grid gap-5 lg:grid-cols-3">
       {projects.map((entry, i) => <ProjectCard entry={entry} index={i} />)}
     </div>
-    <p data-reveal class="mt-8"><a href={site.github} rel="noopener" class="link text-sm font-medium text-heading dark:text-night-heading">More on GitHub</a></p>
+    <p data-reveal class="mt-8"><a href={site.github} rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">More on GitHub</a></p>
   </Section>
 
   <Section id="about" title="About">
     <div class="max-w-2xl">
       <p data-reveal class="font-display text-3xl leading-tight font-medium text-balance text-heading sm:text-4xl dark:text-night-heading">I build the pages where people decide to buy.</p>
       <div class="mt-6 space-y-5 text-lg leading-relaxed">
-        <p data-reveal style="--i: 1">Product pages, carts, checkouts and the campaign pages that lead to them. I joined Marbill in 2022 and I'm now a senior developer in a team of four. <em class="font-display font-medium text-[1.15em] text-heading dark:text-night-heading not-italic">Six</em> years of code, <em class="font-display font-medium text-[1.15em] text-heading dark:text-night-heading not-italic">20+</em> store themes and more landing pages than I can count.</p>
+        <p data-reveal style="--i: 1">Product pages, carts, checkouts and the campaign pages that lead to them. I joined Marbill in 2022 and now work in a team of four front-end developers. <em class="font-display font-medium text-[1.15em] leading-none text-heading dark:text-night-heading not-italic">Six</em> years of code, <em class="font-display font-medium text-[1.15em] leading-none text-heading dark:text-night-heading not-italic">10+</em> store themes and <em class="font-display font-medium text-[1.15em] leading-none text-heading dark:text-night-heading not-italic">100+</em> landing pages.</p>
         <p data-reveal style="--i: 2">What I like most about e-commerce is how quickly you see the result: a faster checkout or a clearer campaign page shows up in the numbers almost right away. That's also why I enjoy working closely with marketing. I'm usually the one who turns their ideas into pages we can ship, and the numbers tell us both what worked.</p>
       </div>
     </div>
@@ -113,7 +115,7 @@ const contacts = [
         </li>
       ))}
     </ol>
-    <p data-reveal class="mt-10"><a href="https://alinadev252.github.io/cv/" rel="noopener" class="link text-sm font-medium text-heading dark:text-night-heading">Full CV with education and certifications</a></p>
+    <p data-reveal class="mt-10"><a href="https://alinadev252.github.io/cv/" rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">Full CV with education and certifications</a></p>
   </Section>
 
   <Section id="skills" title="Skills">
@@ -128,13 +130,13 @@ const contacts = [
   </Section>
 
   <Section id="contact" title="Contact">
-    <p data-reveal class="max-w-xl text-lg leading-relaxed">I'm looking for remote front-end roles, especially in e-commerce. Email is the quickest way to reach me.</p>
+    <p data-reveal class="max-w-xl text-lg leading-relaxed text-pretty">I'm looking for remote front-end roles, especially in e-commerce. Email is the quickest way to reach me.</p>
     <p data-reveal style="--i: 1" class="mt-6">
       <a href={`mailto:${site.email}`} class="link font-display text-2xl break-all text-heading sm:text-3xl dark:text-night-heading">{site.email}</a>
     </p>
     <ul data-reveal style="--i: 2" class="mt-8 flex flex-wrap gap-x-8 gap-y-3 font-medium text-heading dark:text-night-heading">
       {contacts.map((c) => (
-        <li><a href={c.href} rel="noopener" class="link">{c.label}</a></li>
+        <li><a href={c.href} rel={c.download ? undefined : 'noopener'} download={c.download} class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']">{c.label}</a></li>
       ))}
     </ul>
   </Section>

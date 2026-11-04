@@ -9,11 +9,11 @@ const links = [
 <section class="mx-auto grid max-w-5xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-20">
   <div class="min-w-0">
     <h1 class="hero-claim animate-rise font-display font-medium text-heading dark:text-night-heading">{site.hero.headline}</h1>
-    <p class="mt-6 max-w-2xl animate-rise text-base leading-relaxed text-muted sm:text-lg dark:text-night-muted" style="animation-delay: 90ms">{site.hero.intro}</p>
+    <p class="mt-6 max-w-2xl animate-rise text-base leading-relaxed text-pretty text-muted sm:text-lg dark:text-night-muted" style="animation-delay: 90ms">{site.hero.intro}</p>
     <div class="mt-9 flex animate-rise flex-wrap items-center gap-x-6 gap-y-4" style="animation-delay: 180ms">
       <a href={url(site.cv)} download class="inline-flex items-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 ease-out hover:bg-accent-deep dark:bg-accent-bright dark:text-ink dark:hover:bg-accent-soft">Download CV</a>
       {links.map((l) => (
-        <a href={l.href} rel="noopener" class="link text-sm font-medium text-heading dark:text-night-heading">{l.label}</a>
+        <a href={l.href} rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">{l.label}</a>
       ))}
     </div>
   </div>

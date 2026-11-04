@@ -1,8 +1,6 @@
-import heroImage from '../assets/hero.png';
-
 export const site = {
   name: 'Alina Goiea',
-  role: 'Front-End Developer | JavaScript & eCommerce Platforms',
+  role: 'Front-end Developer for E-commerce | JavaScript, Twig, Shopify Liquid',
   description:
     'Front-end developer building storefront themes, landing pages and checkout flows for e-commerce. Open to remote Shopify and front-end roles.',
   email: 'costachealina25@gmail.com',
@@ -14,9 +12,6 @@ export const site = {
     headline: 'I build online stores, from the homepage to the checkout.',
     intro:
       'Six years of front-end, four of them on a live e-commerce platform: storefront themes, campaign pages and checkouts that real shoppers use every day.',
-    image: heroImage,
-    alt: '',
-    caption: 'Placeholder caption, replace with a line about the photo',
   },
   facts: [
     {
@@ -26,18 +21,18 @@ export const site = {
     },
     {
       label: 'Shipped',
-      title: '20+ store themes',
-      text: 'Plus 20 company sites',
+      title: '10+ store themes',
+      text: 'Plus 100+ landing pages',
     },
     {
       label: 'Works in',
       title: 'Twig & JavaScript',
-      text: 'Tailwind, Bootstrap, Vue 3',
+      text: 'Shopify Liquid on the side',
     },
     {
       label: 'Open to',
       title: 'Remote roles',
-      text: 'Front-end in e-commerce',
+      text: 'Based in Málaga, Spain (CET)',
     },
   ],
 };

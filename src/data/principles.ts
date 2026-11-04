@@ -31,7 +31,7 @@ export const principles: Principle[] = [
   },
   {
     title: "Show it, don't explain it",
-    body: 'On phones, gallery arrows covered the product photo. I swapped them for a swipe gallery that shows the edge of the next photo, so people swipe without being told. The product page got a sticky add-to-cart bar, so the main action stays in reach.',
+    body: 'On phones, gallery arrows covered the product photo. I swapped them for a swipe gallery that shows the edge of the next photo, so people swipe without being told.',
     result: 'Swipe, snap and photo counter built for phones.',
     visual: 'screenshot',
     image: swipeGallery,
@@ -39,8 +39,8 @@ export const principles: Principle[] = [
   },
   {
     title: 'Fix it once, for every site',
-    body: 'Email layouts had been copied from each other so often that editing one could quietly break another. I replaced the copied image code with one shared snippet, and set up membership plans so each site shows the right offer from a single setting.',
-    result: 'About 183 email layouts covered by one fix.',
+    body: 'Email layouts had been copied from each other so often that editing one could quietly break another. I pulled the copied image code into one shared snippet, so a fix in one place reaches them all.',
+    result: '183 email layouts fixed with one change.',
     visual: 'diagram',
   },
 ];

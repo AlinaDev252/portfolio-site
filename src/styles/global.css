@@ -63,6 +63,13 @@
   }
 }
 
+@keyframes reveal-failsafe {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @layer base {
   html {
     font-synthesis-weight: none;
@@ -141,6 +148,9 @@
   html.js [data-reveal].is-visible {
     opacity: 1;
     transform: none;
+  }
+  html.js:not(.reveal-ready) [data-reveal] {
+    animation: reveal-failsafe 700ms var(--ease-soft) 2.5s forwards;
   }
   :root.theme-anim,
   :root.theme-anim *:not(.theme-icon),

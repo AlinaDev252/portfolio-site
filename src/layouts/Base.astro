@@ -1,7 +1,6 @@
 ---
 import '@fontsource-variable/newsreader/opsz.css';
 import '@fontsource-variable/instrument-sans';
-import newsreaderLatin from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
 import instrumentLatin from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
@@ -14,12 +13,23 @@ interface Props {
   description?: string;
   image?: string;
   type?: string;
+  noindex?: boolean;
 }
 
-const { title, description = site.description, image = site.ogImage, type = 'website' } = Astro.props;
+const { title, description = site.description, image = site.ogImage, type = 'website', noindex = false } = Astro.props;
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.role}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(url(image), Astro.site);
+const home = new URL(url(), Astro.site).href;
+const person = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role.split('|')[0].trim(),
+  url: home,
+  sameAs: [site.linkedin, site.github],
+  worksFor: { '@type': 'Organization', name: 'Marbill' },
+}).replace(/</g, '\\u003c');
 ---
 <!doctype html>
 <html lang="en">
@@ -28,20 +38,23 @@ const ogImage = new URL(url(image), Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={type} />
-    <meta property="og:url" content={canonical} />
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}, ${site.role}`} />
     <meta property="og:site_name" content={site.name} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f2f1ef" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1e1d1c" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
     <link rel="preload" href={instrumentLatin} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
     <script is:inline>
       const applyTheme = () => {
         const root = document.documentElement;
@@ -55,6 +68,7 @@ const ogImage = new URL(url(image), Astro.site);
       document.addEventListener('astro:after-swap', applyTheme);
     </script>
     <ClientRouter />
+    <script type="application/ld+json" is:inline set:html={person} />
   </head>
   <body class="flex min-h-dvh flex-col overflow-x-clip bg-paper font-sans text-body antialiased dark:bg-ink dark:text-night-text">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-white dark:focus:bg-accent-bright dark:focus:text-ink">Skip to content</a>
@@ -68,6 +82,7 @@ const ogImage = new URL(url(image), Astro.site);
 
       const reveal = () => {
         observer?.disconnect();
+        document.documentElement.classList.add('reveal-ready');
         const items = document.querySelectorAll('[data-reveal]:not(.is-visible)');
         if (!('IntersectionObserver' in window)) {
           items.forEach((el) => el.classList.add('is-visible'));

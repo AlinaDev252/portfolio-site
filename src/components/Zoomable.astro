@@ -28,12 +28,12 @@ const full = await getImage({ src: image, width: Math.min(image.width, 1920) });
     sizes="(min-width: 1024px) 720px, 100vw"
     class="w-full transition-transform duration-500 ease-(--ease-soft) group-hover:scale-[1.015]"
   />
-  <span aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">Click to enlarge</span>
+  <span aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100"><span class="[@media(hover:none)]:hidden">Click</span><span class="hidden [@media(hover:none)]:inline">Tap</span> to enlarge</span>
 </button>
 <dialog
   id={id}
   aria-label={label}
-  class="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-ink/85 backdrop:backdrop-blur-sm"
+  class="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-ink/85 backdrop:backdrop-blur-sm [&_:focus-visible]:outline-white"
 >
   <form method="dialog" class="contents">
     <button type="submit" aria-label="Close" class="block cursor-zoom-out p-4">
