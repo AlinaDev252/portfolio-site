@@ -203,7 +203,7 @@ onBeforeUnmount(() => {
       <div
         v-if="named"
         ref="tabs"
-        class="flex min-w-0 flex-1 gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        class="flex min-w-0 flex-1 gap-2 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         :style="{ maskImage: tabsFade }"
         role="group"
         :aria-label="`${label} pages`"
@@ -262,7 +262,7 @@ onBeforeUnmount(() => {
 
     <ul
       ref="track"
-      class="relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-1 sm:scroll-px-0 [scrollbar-width:none] sm:mx-0 sm:px-0 md:gap-6 [&::-webkit-scrollbar]:hidden"
+      class="relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-px-4 px-4 pb-1 sm:scroll-px-0 [scrollbar-width:none] sm:mx-0 sm:px-0 md:gap-6 [&::-webkit-scrollbar]:hidden"
       tabindex="0"
       :aria-label="`${label} screenshots`"
       @keydown="onKey"
@@ -314,7 +314,7 @@ onBeforeUnmount(() => {
               <span v-if="slide.full" aria-hidden="true" class="absolute right-3 bottom-3 rounded-full bg-ink/75 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100"><span class="[@media(hover:none)]:hidden">Click</span><span class="hidden [@media(hover:none)]:inline">Tap</span> to enlarge</span>
             </component>
           </div>
-          <figcaption v-if="slide.caption" :class="named && 'sr-only'" class="mt-3 text-sm text-muted dark:text-night-muted">{{ slide.caption }}</figcaption>
+          <figcaption v-if="slide.caption" :class="named ? 'sr-only' : 'mt-3'" class="text-sm text-muted dark:text-night-muted">{{ slide.caption }}</figcaption>
         </figure>
       </li>
     </ul>
@@ -362,7 +362,7 @@ onBeforeUnmount(() => {
         <div class="relative min-h-0 flex-1">
           <ul
             ref="zoomTrack"
-            class="flex h-full snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            class="flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             tabindex="-1"
             @scroll.passive="onZoomScroll"
           >
@@ -401,7 +401,7 @@ onBeforeUnmount(() => {
         <p v-if="named" class="px-4 pb-1 text-center text-sm text-white/70 tabular-nums sm:hidden">
           <span class="font-medium text-white">{{ slides[zoomActive].caption }}</span> · {{ zoomActive + 1 }} / {{ total }}
         </p>
-        <div v-if="named" ref="zoomTabs" class="hidden justify-center gap-2 overflow-x-auto px-4 pb-6 [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
+        <div v-if="named" ref="zoomTabs" class="hidden justify-center gap-2 overflow-x-auto overflow-y-hidden px-4 pb-6 [scrollbar-width:none] sm:flex [&::-webkit-scrollbar]:hidden">
           <button
             v-for="(slide, i) in slides"
             :key="i"
