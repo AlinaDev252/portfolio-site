@@ -92,7 +92,7 @@ const contacts = [
     <div class="mt-8 grid gap-5 lg:grid-cols-3">
       {projects.map((entry, i) => <ProjectCard entry={entry} index={i} />)}
     </div>
-    <p data-reveal class="mt-8"><a href={site.github} rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">More on GitHub</a></p>
+    <p data-reveal class="mt-8"><a href={site.github} target="_blank" rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">More on GitHub<span class="sr-only"> (opens in a new tab)</span></a></p>
   </Section>
 
   <Section id="about" title="About">
@@ -115,7 +115,7 @@ const contacts = [
         </li>
       ))}
     </ol>
-    <p data-reveal class="mt-10"><a href="https://cv.alina-goiea.com/" rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">Full CV with education and certifications</a></p>
+    <p data-reveal class="mt-10"><a href="https://cv.alina-goiea.com/" target="_blank" rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-[''] text-sm font-medium text-heading dark:text-night-heading">Full CV with education and certifications<span class="sr-only"> (opens in a new tab)</span></a></p>
   </Section>
 
   <Section id="skills" title="Skills">
@@ -136,7 +136,7 @@ const contacts = [
     </p>
     <ul data-reveal style="--i: 2" class="mt-8 flex flex-wrap gap-x-8 gap-y-3 font-medium text-heading dark:text-night-heading">
       {contacts.map((c) => (
-        <li><a href={c.href} rel={c.download ? undefined : 'noopener'} download={c.download} class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']">{c.label}</a></li>
+        <li><a href={c.href} target={c.download ? undefined : '_blank'} rel={c.download ? undefined : 'noopener'} download={c.download} class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']">{c.label}{!c.download && <span class="sr-only"> (opens in a new tab)</span>}</a></li>
       ))}
     </ul>
   </Section>

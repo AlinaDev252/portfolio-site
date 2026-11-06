@@ -17,7 +17,7 @@ const quick = status === 'in-progress' ? undefined : liveUrl ? { label: 'View li
   <div class="flex items-baseline justify-between gap-3">
     <h3 class="font-semibold text-heading dark:text-night-heading">{title}</h3>
     {quick && (
-      <a href={quick.href} rel="noopener" tabindex="-1" aria-hidden="true" class="shrink-0 -translate-x-2 text-sm font-medium whitespace-nowrap text-accent opacity-0 transition-[opacity,translate] duration-300 ease-(--ease-soft) group-focus-within:translate-x-0 group-focus-within:opacity-100 group-hover:translate-x-0 group-hover:opacity-100 hover:text-accent-deep motion-reduce:translate-x-0 dark:text-accent-bright [@media(hover:none)]:translate-x-0 [@media(hover:none)]:opacity-100">{quick.label} <span>→</span></a>
+      <a href={quick.href} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true" class="shrink-0 -translate-x-2 text-sm font-medium whitespace-nowrap text-accent opacity-0 transition-[opacity,translate] duration-300 ease-(--ease-soft) group-focus-within:translate-x-0 group-focus-within:opacity-100 group-hover:translate-x-0 group-hover:opacity-100 hover:text-accent-deep motion-reduce:translate-x-0 dark:text-accent-bright [@media(hover:none)]:translate-x-0 [@media(hover:none)]:opacity-100">{quick.label} <span>→</span></a>
     )}
   </div>
   <p class="mt-2 leading-relaxed">{summary}</p>
@@ -28,7 +28,7 @@ const quick = status === 'in-progress' ? undefined : liveUrl ? { label: 'View li
     ) : (
       <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-heading dark:text-night-heading">
         {links.map((l) => (
-          <li><a href={l.href} rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']">{l.label}<span class="sr-only"> for {title}</span></a></li>
+          <li><a href={l.href} target="_blank" rel="noopener" class="link relative after:absolute after:-inset-x-1 after:-inset-y-2.5 after:content-['']">{l.label}<span class="sr-only"> for {title} (opens in a new tab)</span></a></li>
         ))}
       </ul>
     )}
