@@ -2,7 +2,7 @@ export const site = {
   name: 'Alina Goiea',
   role: 'Front-end Developer for E-commerce | JavaScript, Twig, Shopify Liquid',
   description:
-    'Front-end developer building storefront themes, landing pages and checkout flows for e-commerce. Open to remote Shopify and front-end roles.',
+    'Front-end developer building storefront themes, landing pages and checkout flows for e-commerce.',
   email: 'costachealina25@gmail.com',
   linkedin: 'https://www.linkedin.com/in/alina-goiea-26350b53',
   github: 'https://github.com/AlinaDev252',
@@ -30,9 +30,9 @@ export const site = {
       text: 'Shopify Liquid on the side',
     },
     {
-      label: 'Open to',
-      title: 'Remote roles',
-      text: 'Based in Málaga, Spain (CET)',
+      label: 'Based in',
+      title: 'Málaga, Spain',
+      text: 'Works remotely, CET',
     },
   ],
 };
