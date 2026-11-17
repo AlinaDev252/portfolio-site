@@ -1,0 +1,25 @@
+# Alina Goiea
+
+> Front-end developer for e-commerce. Builds storefront themes, landing pages and checkout flows in JavaScript, Twig and Shopify Liquid. Based in Málaga, Spain, working remotely on CET.
+
+Six years of front-end, four of them at Marbill Technologies on a live e-commerce platform: storefront themes, campaign pages and checkouts that real shoppers use every day. 10+ store themes and 100+ landing pages shipped, in a team of four front-end developers working side by side with the PHP back-end team. Brands in the work samples stay hidden under NDA.
+
+## Work
+
+- [Selected work](https://alina-goiea.com/#work): Four principles applied on every page (let people finish typing; the price you see is the price you pay; show it, don't explain it; fix it once, for every site), each shown through real work
+- [Store themes](https://alina-goiea.com/#themes): Two of the 10+ store themes, a tech store built for big catalogues and a home store built to feel calm, both in Twig, Bootstrap 5 and JavaScript
+- [Personal projects](https://alina-goiea.com/#projects): A hand-coded CV site (live), Verdel, a Shopify theme built on Dawn (in progress), and a B2B tier pricing section in Liquid (in progress)
+
+## About
+
+- [About](https://alina-goiea.com/#about): Building the pages where people decide to buy, and working closely with marketing to ship them
+- [Experience](https://alina-goiea.com/#experience): Front-end developer at Marbill Technologies (Jun 2022 to present), freelance and self-directed projects (Jan 2020 to May 2022), operations manager at Azelis Romania (Feb 2011 to Dec 2019)
+- [Skills](https://alina-goiea.com/#skills): HTML5, CSS3, Tailwind CSS, Bootstrap 5, JavaScript (ES6+), Twig, Vue 3, HTML email, Shopify Liquid and Online Store 2.0, accessibility, Core Web Vitals and technical SEO
+- [Full CV](https://cv.alina-goiea.com/): Experience in detail, education and certifications
+- [CV (PDF)](https://alina-goiea.com/Alina_Goiea_Frontend_Developer.pdf): Downloadable CV in English
+
+## Contact
+
+- [Email](mailto:costachealina25@gmail.com): The quickest way to get in touch
+- [LinkedIn](https://www.linkedin.com/in/alina-goiea-26350b53)
+- [GitHub](https://github.com/AlinaDev252): Code for the personal projects
