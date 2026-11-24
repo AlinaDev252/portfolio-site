@@ -45,23 +45,11 @@
   --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
   --animate-rise: rise 600ms var(--ease-soft) both;
   --animate-settle: settle 800ms var(--ease-soft) both;
-  --animate-swing: swing 900ms var(--ease-soft);
 
   @keyframes rise {
     from {
       opacity: 0;
       transform: translateY(12px);
-    }
-  }
-  @keyframes swing {
-    25% {
-      rotate: 5deg;
-    }
-    55% {
-      rotate: -3deg;
-    }
-    80% {
-      rotate: 1deg;
     }
   }
   @keyframes settle {
