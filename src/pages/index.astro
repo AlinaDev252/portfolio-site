@@ -10,7 +10,7 @@ import Gallery from '../components/Gallery.vue';
 import ProjectCard from '../components/ProjectCard.astro';
 import { site, url } from '../data/site';
 import { principles } from '../data/principles';
-import { storeThemes } from '../data/themes';
+import { storeThemes, themeStack } from '../data/themes';
 
 const themeGalleries = await Promise.all(
   storeThemes.map((theme) =>
@@ -70,12 +70,12 @@ const contacts = [
 
   <Section id="themes" title="Store themes">
     <p data-reveal class="max-w-xl text-pretty text-muted dark:text-night-muted">Two of the 10+ store themes I've built. Each is a reusable template that can be restyled for a different brand.</p>
+    <p data-reveal class="mt-4 text-xs font-semibold tracking-wide text-muted uppercase dark:text-night-muted">{themeStack}</p>
     <div class="mt-10 space-y-14">
       {storeThemes.map((theme, i) => (
         <article class="border-t border-hairline pt-10 first:border-t-0 first:pt-0 dark:border-night-hairline">
           <div data-reveal class="max-w-2xl">
             <p aria-hidden="true" class="font-display text-sm text-muted tabular-nums dark:text-night-muted">{String(i + 1).padStart(2, '0')}</p>
-            <p class="mt-2 text-xs font-semibold tracking-wide text-muted uppercase dark:text-night-muted">{theme.stack}</p>
             <h3 class="mt-2 font-display text-xl font-medium text-balance text-heading sm:text-2xl dark:text-night-heading">{theme.title}</h3>
             <p class="mt-2 leading-relaxed text-pretty">{theme.body}</p>
           </div>
@@ -97,9 +97,9 @@ const contacts = [
 
   <Section id="about" title="About">
     <div class="max-w-2xl">
-      <p data-reveal class="font-display text-3xl leading-tight font-medium text-balance text-heading sm:text-4xl dark:text-night-heading">I build the pages where people decide to buy.</p>
+      <p data-reveal class="font-display text-3xl leading-tight font-medium text-balance text-heading sm:text-4xl dark:text-night-heading">I came to code after nine years running operations.</p>
       <div class="mt-6 space-y-5 text-lg leading-relaxed">
-        <p data-reveal style="--i: 1">Product pages, carts, checkouts and the campaign pages that lead to them. I joined Marbill in 2022 and now work in a team of four front-end developers, side by side with the PHP back-end team. <em class="font-display font-medium text-[1.15em] leading-none text-heading dark:text-night-heading not-italic">Six</em> years of code, <em class="font-display font-medium text-[1.15em] leading-none text-heading dark:text-night-heading not-italic">10+</em> store themes and <em class="font-display font-medium text-[1.15em] leading-none text-heading dark:text-night-heading not-italic">100+</em> landing pages.</p>
+        <p data-reveal style="--i: 1">Now I build product pages, carts, checkouts and the campaign pages that lead to them. I joined Marbill in 2022 and now work in a team of four front-end developers, side by side with the PHP back-end team.</p>
         <p data-reveal style="--i: 2">What I like most about e-commerce is how quickly you see the result. Make the checkout faster or a campaign page clearer, and it shows up in the numbers almost right away. That's also why I like working closely with marketing. I'm usually the one who turns their ideas into pages we can ship, and then we both find out what worked.</p>
       </div>
     </div>
@@ -107,8 +107,8 @@ const contacts = [
 
   <Section id="experience" title="Experience">
     <ol class="divide-y divide-hairline border-y border-hairline dark:divide-night-hairline dark:border-night-hairline">
-      {jobs.map((job, i) => (
-        <li data-reveal style={`--i: ${i}`} class="grid gap-1 py-4 lg:grid-cols-[10.5rem_minmax(0,1fr)_auto] lg:items-baseline lg:gap-6">
+      {jobs.map((job) => (
+        <li data-reveal class="grid gap-1 py-4 lg:grid-cols-[10.5rem_minmax(0,1fr)_auto] lg:items-baseline lg:gap-6">
           <p class="text-sm text-muted tabular-nums dark:text-night-muted">{job.dates}<span class="lg:hidden"> · {job.place}</span></p>
           <h3 class="font-semibold text-heading dark:text-night-heading">{job.title}{job.company && <span class="font-normal text-muted dark:text-night-muted"> · {job.company}</span>}</h3>
           <p class="hidden text-sm text-muted lg:block dark:text-night-muted">{job.place}</p>
@@ -120,8 +120,8 @@ const contacts = [
 
   <Section id="skills" title="Skills">
     <dl class="divide-y divide-hairline dark:divide-night-hairline">
-      {skills.map((skill, i) => (
-        <div data-reveal style={`--i: ${i}`} class="grid gap-1 py-4 first:pt-0 sm:grid-cols-[11rem_1fr] sm:gap-6">
+      {skills.map((skill) => (
+        <div data-reveal class="grid gap-1 py-4 first:pt-0 sm:grid-cols-[11rem_1fr] sm:gap-6">
           <dt class="font-semibold text-heading dark:text-night-heading">{skill.label}</dt>
           <dd class="leading-relaxed">{skill.value}</dd>
         </div>

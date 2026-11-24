@@ -29,6 +29,13 @@ const person = JSON.stringify({
   sameAs: [site.linkedin, site.github],
   worksFor: { '@type': 'Organization', name: 'Marbill' },
 }).replace(/</g, '\\u003c');
+const website = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: home,
+}).replace(/</g, '\\u003c');
+const isHome = Astro.url.pathname === new URL(home).pathname;
 ---
 <!doctype html>
 <html lang="en">
@@ -66,6 +73,7 @@ const person = JSON.stringify({
       applyTheme();
     </script>
     <script type="application/ld+json" is:inline set:html={person} />
+    {isHome && <script type="application/ld+json" is:inline set:html={website} />}
   </head>
   <body class="flex min-h-dvh flex-col overflow-x-clip bg-paper font-sans text-body antialiased dark:bg-ink dark:text-night-text">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-white dark:focus:bg-accent-bright dark:focus:text-ink">Skip to content</a>

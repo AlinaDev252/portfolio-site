@@ -11,7 +11,6 @@ export interface ThemeSlide {
 export interface StoreTheme {
   title: string;
   body: string;
-  stack: string;
   name: string;
   slides: ThemeSlide[];
 }
@@ -36,18 +35,18 @@ const slidesFor = (folder: string, name: string): ThemeSlide[] =>
     phoneAlt: `${name}: ${caption.toLowerCase()} on a phone`,
   }));
 
+export const themeStack = 'Twig, Bootstrap 5, JavaScript';
+
 export const storeThemes: StoreTheme[] = [
   {
     title: 'Built for big catalogues',
     body: '12 homepage sections, a mega menu, a product page that keeps "Add to cart" in reach on phones.',
-    stack: 'Twig, Bootstrap 5, JavaScript',
     name: 'Tech store theme',
     slides: slidesFor('catalogue', 'Tech store theme'),
   },
   {
     title: 'Built to feel calm',
     body: '9 homepage sections, motion kept subtle, a product page made for swiping.',
-    stack: 'Twig, Bootstrap 5, JavaScript',
     name: 'Home store theme',
     slides: slidesFor('calm', 'Home store theme'),
   },

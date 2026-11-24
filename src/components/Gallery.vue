@@ -307,7 +307,7 @@ onBeforeUnmount(() => {
               :fetchpriority="eager && i === 0 ? 'high' : undefined"
               decoding="async"
               draggable="false"
-              class="no-drag"
+              class="no-drag dark:brightness-90"
               :class="view === 'mobile' && slide.mobile ? 'h-full w-auto rounded-lg shadow-sm' : 'h-full w-full object-cover object-top'"
             />
             </picture>
@@ -325,14 +325,14 @@ onBeforeUnmount(() => {
           v-for="(slide, i) in slides"
           :key="i"
           type="button"
-          class="group inline-flex size-6 items-center justify-center"
+          class="group inline-flex h-11 w-8 items-center justify-center max-[359px]:w-6"
           :aria-label="named ? `Show ${slide.caption}` : `Show screenshot ${i + 1}`"
           :aria-current="active === i ? 'true' : undefined"
           @click="goTo(i)"
         >
           <span
-            class="block size-2 rounded-full transition-colors"
-            :class="active === i ? 'bg-accent dark:bg-accent-bright' : 'bg-line group-hover:bg-muted dark:bg-night-line dark:group-hover:bg-night-muted'"
+            class="block h-2 rounded-full transition-colors"
+            :class="active === i ? 'w-5 bg-accent dark:bg-accent-bright' : 'w-2 bg-muted group-hover:bg-heading dark:bg-night-muted dark:group-hover:bg-night-heading'"
           ></span>
         </button>
       </div>

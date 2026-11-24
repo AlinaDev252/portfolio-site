@@ -2,6 +2,9 @@ import type { ImageMetadata } from 'astro';
 import checkoutForm from '../assets/work/principles/checkout-form.png';
 import offersAndTotal from '../assets/work/principles/offers-and-total.png';
 import swipeGallery from '../assets/work/principles/swipe-gallery.png';
+import checkoutFormMobile from '../assets/work/principles/checkout-form-mobile.png';
+import offersAndTotalMobile from '../assets/work/principles/offers-and-total-mobile.png';
+import swipeGalleryMobile from '../assets/work/principles/swipe-gallery-mobile.png';
 
 export interface Principle {
   title: string;
@@ -9,6 +12,7 @@ export interface Principle {
   result: string;
   visual: 'screenshot' | 'diagram';
   image?: ImageMetadata;
+  mobileImage?: ImageMetadata;
   imageAlt?: string;
 }
 
@@ -19,6 +23,7 @@ export const principles: Principle[] = [
     result: 'Shipped in 10 campaigns.',
     visual: 'screenshot',
     image: checkoutForm,
+    mobileImage: checkoutFormMobile,
     imageAlt: 'Checkout form before and after: before, every empty field shows a red warning after leaving one field; after, only the filled email field is marked valid.',
   },
   {
@@ -27,6 +32,7 @@ export const principles: Principle[] = [
     result: 'Totals match the charge in every currency. Offers show once, then get out of the way.',
     visual: 'screenshot',
     image: offersAndTotal,
+    mobileImage: offersAndTotalMobile,
     imageAlt: 'A before-you-pay window listing only the two offers not yet picked, next to an order summary whose total matches the pay button.',
   },
   {
@@ -35,6 +41,7 @@ export const principles: Principle[] = [
     result: 'Swipe, snap and photo counter built for phones.',
     visual: 'screenshot',
     image: swipeGallery,
+    mobileImage: swipeGalleryMobile,
     imageAlt: 'Phone product gallery on photo 1 of 4 with the next photo peeking in, then after a swipe on photo 2 of 4 with the dots updated.',
   },
   {

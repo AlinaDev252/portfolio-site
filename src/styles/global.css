@@ -150,16 +150,16 @@
 @layer components {
   html.js [data-reveal] {
     opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 700ms var(--ease-soft), transform 700ms var(--ease-soft);
-    transition-delay: calc(var(--i, 0) * 90ms);
+    transform: translateY(8px);
+    transition: opacity 350ms var(--ease-soft), transform 350ms var(--ease-soft);
+    transition-delay: calc(var(--i, 0) * 60ms);
   }
   html.js [data-reveal].is-visible {
     opacity: 1;
     transform: none;
   }
   html.js:not(.reveal-ready) [data-reveal] {
-    animation: reveal-failsafe 700ms var(--ease-soft) 2.5s forwards;
+    animation: reveal-failsafe 350ms var(--ease-soft) 1s forwards;
   }
   :root.theme-anim,
   :root.theme-anim *:not(.theme-icon),
