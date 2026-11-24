@@ -8,7 +8,7 @@ Six years of front-end, four of them at Marbill Technologies on a live e-commerc
 
 - [Selected work](https://alina-goiea.com/#work): Four principles applied on every page (let people finish typing; the price you see is the price you pay; show it, don't explain it; fix it once, for every site), each shown through real work
 - [Store themes](https://alina-goiea.com/#themes): Two of the 10+ store themes, a tech store built for big catalogues and a home store built to feel calm, both in Twig, Bootstrap 5 and JavaScript
-- [Personal projects](https://alina-goiea.com/#projects): A hand-coded CV site (live), Verdel, a Shopify theme built on Dawn with a formula quiz and a bundle discount (code on GitHub), and a B2B tier pricing section in Liquid (in progress)
+- [Personal projects](https://alina-goiea.com/#projects): A hand-coded CV site (live), Verdel, a Shopify theme built on Dawn with a formula quiz and a bundle discount (code on GitHub), and a B2B tier pricing section for Dawn that shows volume price breaks to trade buyers only (code on GitHub)
 
 ## About
 
