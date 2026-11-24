@@ -1,7 +1,8 @@
 ---
-title: Verdel, a Shopify theme
-summary: A Shopify theme I'm building on top of Dawn, Shopify's reference theme.
-stack: [Shopify, Liquid, Online Store 2.0]
-status: in-progress
+title: Verdel
+summary: A Shopify theme on Dawn for a made-up supplement brand, with a formula quiz and a bundle discount built as a Shopify Function.
+stack: [Shopify, Liquid, JavaScript, Shopify Functions]
+status: live
+repoUrl: https://github.com/AlinaDev252/verdel-theme
 order: 2
 ---
