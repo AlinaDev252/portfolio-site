@@ -1,6 +1,6 @@
 ---
-import '@fontsource-variable/newsreader/opsz.css';
 import '@fontsource-variable/instrument-sans';
+import newsreaderLatin from '../assets/fonts/newsreader-latin-400-600.woff2?url';
 import instrumentLatin from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
@@ -60,6 +60,7 @@ const isHome = Astro.url.pathname === new URL(home).pathname;
     <meta name="theme-color" content="#1e1d1c" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
+    <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={instrumentLatin} as="font" type="font/woff2" crossorigin />
     <script is:inline>
       const applyTheme = () => {
